@@ -1,9 +1,9 @@
 Package: fdapace
 Type: Package
 Title: Functional Data Analysis and Empirical Dynamics
-URL: https://github.com/hadjipantelis/tPACE (development branch)
-Version: 0.1.0
-Date: 2016-02-10
+URL: https://github.com/hadjipantelis/tPACE
+Version: 0.1.1
+Date: 2016-03-10
 Author: Xiongtao Dai,
     Pantelis Z. Hadjipantelis,
     Hao Ji,
@@ -18,6 +18,6 @@ LinkingTo: Rcpp, RcppEigen
 Suggests: rgl, aplpack, mgcv, ks, MASS, gtools
 NeedsCompilation: yes
 RoxygenNote: 5.0.1
-Packaged: 2016-03-12 19:33:10 UTC; pantelis
+Packaged: 2016-03-14 17:37:58 UTC; pantelis
 Repository: CRAN
-Date/Publication: 2016-03-13 11:29:39
+Date/Publication: 2016-03-15 00:04:22

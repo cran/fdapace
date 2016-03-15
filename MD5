@@ -1,4 +1,4 @@
-15a3b70b6ac45cb95eb0082bdd4c1462 *DESCRIPTION
+cc51cb9b306a6a8173e5f85a295989e9 *DESCRIPTION
 b697c6a11ce5b6fff0829d0469908dea *LICENSE
 e870dbf86e2044f98d4e2ff1ff8f37e6 *NAMESPACE
 ee7ba1723f39b1c53a438c346c73496c *R/AdjustBW1.R
@@ -36,7 +36,7 @@ f63de0ac1436a3e32dff7e951153be86 *R/GetBinnedCurve.R
 b22032ebe7504890e1e671dcd6f0959d *R/GetCovDense.R
 0ceb3386da7d06bc433b1a905b18abf1 *R/GetCrCorYX.R
 89d5bfadab4debf93f2f01abc9c4d272 *R/GetCrCorYZ.R
-ab967cf74412109765c112b131270350 *R/GetCrCovYX.R
+1398ef55ff43b0c5c1af57a169f2e14f *R/GetCrCovYX.R
 d262f6045e32d8df93a7bf549e9ef77b *R/GetCrCovYZ.R
 c8281bbafc2558903c943c2d35c1898f *R/GetEigenAnalysisResults.R
 1bde5a6fc2e43e13bdc2288d2032b501 *R/GetINScores.R
@@ -82,7 +82,7 @@ cdd6b2e63d92cc1519e9c1d8d98f968e *R/print.FPCA.R
 cde859c0a89b264e025477054f392150 *build/vignette.rds
 aa6db8da76ab30db6ed0c7532c83f8c1 *data/medfly25.RData
 81b856568ed6f795a3e4ba86039c9f0b *inst/doc/fdapaceVignette.Rnw
-69a9bf4d338f5dc23afb8e5d32850d7e *inst/doc/fdapaceVignette.pdf
+571eaedc95f43157721cb31fd7d03185 *inst/doc/fdapaceVignette.pdf
 0cc4c5cd517144a994733605acf33c64 *man/CheckData.Rd
 3db476450dfec7fccb6a5e440664587c *man/CheckOptions.Rd
 9c57bd420ef211ff0b9147007837ff00 *man/CreateBWPlot.Rd
@@ -100,7 +100,7 @@ aa9e241743b3ce3d029a109ac2a55993 *man/FPCA.Rd
 837984f4498041c08604d5df432d828b *man/FVPA.Rd
 24b5e8227e24c8f2da4f1986bb02771a *man/GetCrCorYX.Rd
 9d355872984892d32c19123601aa03e9 *man/GetCrCorYZ.Rd
-ea52f299cf140bec8853213d7ddea687 *man/GetCrCovYX.Rd
+1902138eb732e83e1619c108d1d6728a *man/GetCrCovYX.Rd
 d7972375fd7706079d80c2fab6756c83 *man/GetCrCovYZ.Rd
 87c53efd08a0bdedd7b912eab1e131ad *man/GetNormalisedSample.Rd
 624c36b86deb1d9fe523beb33ddb0f74 *man/HandleNumericsAndNAN.Rd
@@ -119,14 +119,14 @@ c583f5d930e92064841f3936b6b4fb62 *man/fitted.FPCA.Rd
 6735285fddb36acccc5a8556a598299b *man/medfly25.Rd
 7c8f87873cd8b2913e5fbf67fc9374dc *man/plot.FPCA.Rd
 3c62dc280343912df370052406921687 *man/print.FPCA.Rd
-70ad4829be52a604575ce8bb38836b7f *src/CPPlwls1d.cpp
+e235b5be503f05d27fc1f586b15738c2 *src/CPPlwls1d.cpp
 9cbc8e71678603825cf5abf7d5e522c8 *src/GetIndCEScoresCPP.cpp
 966ad0fe1919356fc027fb187fb9a472 *src/GetIndCEScoresCPPnewInd.cpp
 260c1ee995645c74f39b58e5bd512eb1 *src/RCPPmean.cpp
 ca9fe21740ee48f81e19a20a21d00e5f *src/RCPPvar.cpp
 195221494adaffa4f9385c7324a5fa2d *src/RcppExports.cpp
-aa89f322b77b35084c2609e4b620832f *src/Rmullwlsk.cpp
-752b3fa8ff0976448afe2b24a734beaf *src/RmullwlskCC.cpp
+551dc084b2e9651e13140ed64570f6cb *src/Rmullwlsk.cpp
+a426dfac821e2d74ca8d68a3135f29c2 *src/RmullwlskCC.cpp
 5915c0073d8f754ecc0a6fd22b7b9cd3 *src/RrotatedMullwlsk.cpp
 3504fda65c6e13653b9cfc38fb895b92 *src/dropZeroElementsXYWin.cpp
 99d51e3cff6fc571654ed4d3cdd5865d *src/interp2lin.cpp
