@@ -5,7 +5,7 @@
 \title{Create the design plot of the functional data.}
 \usage{
 CreateDesignPlot(t, obsGrid = NULL, isColorPlot = TRUE, noDiagonal = TRUE,
-  ...)
+  addLegend = TRUE, ...)
 }
 \arguments{
 \item{t}{a list of observed time points for functional data}
@@ -20,6 +20,8 @@ FALSE: create black and white plot with dots indicating observed time pairs}
 TRUE:  remove diagonal time pairs
 FALSE:  do not remove diagonal time pairs}
 
+\item{addLegend}{Logical, default TRUE}
+
 \item{...}{Other arguments passed into \code{plot()}.}
 }
 \description{
@@ -31,6 +33,6 @@ n <- 20
 pts <- seq(0, 1, by=0.05)
 sampWiener <- Wiener(n, pts)
 sampWiener <- Sparsify(sampWiener, pts, 10)
-CreateDesignPlot(sampWiener$tList, sort(unique(unlist(sampWiener$tList))))
+CreateDesignPlot(sampWiener$Lt, sort(unique(unlist(sampWiener$Lt))))
 }
 

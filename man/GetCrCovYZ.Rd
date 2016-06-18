@@ -5,7 +5,7 @@
 \title{Functional Cross Covariance between longitudinal variable Y and scalar variable Z}
 \usage{
 GetCrCovYZ(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL,
-  support = NULL)
+  support = NULL, kern = "gauss")
 }
 \arguments{
 \item{bw}{Scalar bandwidth for smoothing the cross-covariance function (if NULL it will be automatically estimated)}
@@ -20,7 +20,9 @@ GetCrCovYZ(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL,
 
 \item{Ymu}{Vector Q-1 Vector of length nObsGrid containing the mean function estimate (You can get that from FPCA)}
 
-\item{support}{Vector of unique and sorted values for the support of the smoothed cross-covariance function (if NULL it will be automatically estimated)
+\item{support}{Vector of unique and sorted values for the support of the smoothed cross-covariance function (if NULL it will be automatically estimated)}
+
+\item{kern}{Kernel type to be used. See ?FPCA for more details. (defult: 'gauss')
 If the variables Ly1 is in matrix form the data are assumed dense and only the raw cross-covariance is returned.}
 }
 \value{
@@ -35,10 +37,10 @@ Calculate the raw and the smoothed cross-covariance between functional
 and scalar predictors using bandwidth bw or estimate that bw using GCV
 }
 \examples{
-yList <- list( runif(5),  c(1:3), c(2:4), c(4))
-tList <- list( c(1:5), c(1:3), c(1:3), 4)
+Ly <- list( runif(5),  c(1:3), c(2:4), c(4))
+Lt <- list( c(1:5), c(1:3), c(1:3), 4)
 Z = rep(4,4) # Constant vector so the covariance has to be zero.
-sccObj = GetCrCovYZ(bw=1, Z= Z, Ly=yList, Lt=tList, Ymu=rep(4,5))
+sccObj = GetCrCovYZ(bw=1, Z= Z, Ly=Ly, Lt=Lt, Ymu=rep(4,5))
 }
 \references{
 \cite{Yang, Wenjing, Hans-Georg Mueller, and Ulrich Stadtmueller. "Functional singular component analysis." Journal of the Royal Statistical Society: Series B (Statistical Methodology) 73.3 (2011): 303-324}

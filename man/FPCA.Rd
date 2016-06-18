@@ -4,12 +4,12 @@
 \alias{FPCA}
 \title{Functional Principal Component Analysis}
 \usage{
-FPCA(y, t, optns = list())
+FPCA(Ly, Lt, optns = list())
 }
 \arguments{
-\item{y}{A list of \emph{n} vectors containing the observed values for each individual. Missing values specified by \code{NA}s are supported for dense case (\code{dataType='dense'}).}
+\item{Ly}{A list of \emph{n} vectors containing the observed values for each individual. Missing values specified by \code{NA}s are supported for dense case (\code{dataType='dense'}).}
 
-\item{t}{A list of \emph{n} vectors containing the observation time points for each individual corresponding to y.}
+\item{Lt}{A list of \emph{n} vectors containing the observation time points for each individual corresponding to y. Each vector should be sorted in ascending order.}
 
 \item{optns}{A list of options control parameters specified by \code{list(name=value)}. See `Details'.}
 }
@@ -21,7 +21,7 @@ A list containing the following fields:
 \item{xiEst}{A \emph{n} by \emph{K} matrix containing the FPC estimates.} 
 \item{xiVar}{A list of length \emph{n}, each entry containing the variance estimates for the FPC estimates.}
 \item{obsGrid}{The (sorted) grid points where all observation points are pooled.}
-\item{mu}{A vector of length nObsGrid containing the mean function estimate.}
+\item{mu}{A vector of length nWorkGrid containing the mean function estimate.}
 \item{workGrid}{A vector of length nWorkGrid. The internal regular grid on which the eigen analysis is carried on.}
 \item{smoothedCov}{A nWorkGrid by nWorkGrid matrix of the smoothed covariance surface.}
 \item{fittedCov}{A nWorkGrid by nWorkGrid matrix of the fitted covariance surface, which is guaranteed to be non-negative definite.}
@@ -32,7 +32,7 @@ A list containing the following fields:
 \item{cumFVE}{A vector with the percentages of the total variance explained by each FPC. Increase to almost 1.}
 \item{FVE}{A percentage indicating the total variance explained by chosen FPCs with corresponding 'FVEthreshold'.}
 \item{criterionValue}{A scalar specifying the criterion value obtained by the selected number of components with specific methodSelectK: FVE,AIC,BIC values or NULL for fixedK.}
-\item{inputData}{A list containting the original 'y' and 't' lists used as inputs to FPCA. NULL if 'lean' was specified to be TRUE.}
+\item{inputData}{A list containting the original 'Ly' and 'Lt' lists used as inputs to FPCA. NULL if 'lean' was specified to be TRUE.}
 }
 \description{
 FPCA for dense or sparse functional data.
@@ -41,9 +41,9 @@ FPCA for dense or sparse functional data.
 Available control options are 
 \describe{
 \item{userBwCov}{The bandwidth value for the smoothed covariance function; positive numeric - default: determine automatically based on 'methodBwCov'}
-\item{methodBwCov}{The bandwidth choice method for the smoothed covariance function; 'GMeanAndGCV','CV','GCV' - default: 'GMeanAndGCV'')}
+\item{methodBwCov}{The bandwidth choice method for the smoothed covariance function; 'GMeanAndGCV' (the geometric mean of the GCV bandwidth and the minimum bandwidth),'CV','GCV' - default: 10\% of the support}
 \item{userBwMu}{The bandwidth value for the smoothed mean function (using 'CV' or 'GCV'); positive numeric - default: determine automatically based on 'methodBwMu'}
-\item{methodBwMu}{The bandwidth choice method for the mean function; 'GMeanAndGCV','CV','GCV' - default: 'GMeanAndGCV''} 
+\item{methodBwMu}{The bandwidth choice method for the mean function; 'GMeanAndGCV' (the geometric mean of the GCV bandwidth and the minimum bandwidth),'CV','GCV' - default: 5\% of the support} 
 \item{dataType}{The type of design we have (usually distinguishing between sparse or dense functional data); 'Sparse', 'Dense', 'DenseWithMV', 'p>>n' - default:  determine automatically based on 'IsRegular'}
 \item{diagnosticsPlot}{Make diagnostics plot (design plot, mean, scree plot and first k (<=3) eigenfunctions); logical - default: FALSE}
 \item{error}{Assume measurement error in the dataset; logical - default: TRUE}
@@ -52,7 +52,7 @@ Available control options are
 \item{kernel}{Smoothing kernel choice, common for mu and covariance; "rect", "gauss", "epan", "gausvar", "quar" - default: "gauss"; dense data are assumed noise-less so no smoothing is performed. }
 \item{kFoldMuCov}{The number of folds to be used for mean and covariance smoothing. Default: 10}
 \item{lean}{If TRUE the 'inputData' field in the output list is empty. Default: FALSE}
-\item{maxK}{The maximum number of principal components to consider; positive integer smaller than 128 - default: min(20, N-1), N:# of curves}
+\item{maxK}{The maximum number of principal components to consider - default: min(20, N-1), N:# of curves}
 \item{methodXi}{The method to estimate the PC scores; 'CE' (Condit. Expectation), 'IN' (Numerical Integration) - default: 'CE' for sparse data, 'IN' for dense data.}
 \item{methodMuCovEst}{The method to estimate the mean and covariance in the case of dense functional data; 'cross-sectional', 'smooth' - default: 'cross-sectional'}
 \item{nRegGrid}{The number of support points in each direction of covariance surface; numeric - default: 51}
@@ -60,12 +60,12 @@ Available control options are
 \item{methodSelectK}{The method of choosing the number of principal components K; 'FVE','AIC','BIC', or a positive integer as specified number of components: default 'FVE')}
 \item{shrink}{Whether to use shrinkage method to estimate the scores in the dense case (see Yao et al 2003) - default FALSE}
 \item{outPercent}{A 2-element vector in [0,1] indicating the outPercent data in the boundary - default (0,1)}
-\item{rho}{The truncation threshold for the iterative residual. 'cv': choose rho by leave-one-observation out cross-validation; 'no': no regularization - default "cv".}
+\item{rho}{The truncation threshold for the iterative residual. 'cv': choose rho by leave-one-observation out cross-validation; 'no': no regularization - default "cv" if error == TRUE, and "no" if error == FALSE.}
 \item{rotationCut}{The 2-element vector in [0,1] indicating the percent of data truncated during sigma^2 estimation; default  (0.25, 0.75))}
 \item{useBinnedData}{Should the data be binned? 'FORCE' (Enforce the # of bins), 'AUTO' (Select the # of  bins automatically), 'OFF' (Do not bin) - default: 'AUTO'}
 \item{useBinnedCov}{Whether to use the binned raw covariance for smoothing; logical - default:TRUE}
-\item{userCov}{The user-defined smoothed covariance function; list of two elements: numerical vector 't' and matrix 'cov', 't' must cover the support defined by 'y' - default: NULL}
-\item{userMu}{The user-defined smoothed mean function; list of two numerical vector 't' and 'mu' of equal size, 't' must cover the support defined 'y' - default: NULL}
+\item{userCov}{The user-defined smoothed covariance function; list of two elements: numerical vector 't' and matrix 'cov', 't' must cover the support defined by 'Ly' - default: NULL}
+\item{userMu}{The user-defined smoothed mean function; list of two numerical vector 't' and 'mu' of equal size, 't' must cover the support defined 'Ly' - default: NULL}
 \item{userSigma2}{The user-defined measurement error variance. A positive scaler. If specified then no regularization is used (rho is set to 'no', unless specified otherwise). Default to `NULL`}
 \item{verbose}{Display diagnostic messages; logical - default: FALSE}
 }
@@ -76,7 +76,7 @@ n <- 20
 pts <- seq(0, 1, by=0.05)
 sampWiener <- Wiener(n, pts)
 sampWiener <- Sparsify(sampWiener, pts, 10)
-res <- FPCA(sampWiener$yList, sampWiener$tList, 
+res <- FPCA(sampWiener$Ly, sampWiener$Lt, 
             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=TRUE))
 CreateCovPlot(res, 'Fitted')
 }

@@ -38,7 +38,8 @@ GetSmoothedMeanCurve <- function (y, t, obsGrid, regGrid, optns){
         if ( 0 == length(bw_mu)){ 
           stop('The data is too sparse to estimate a mean function. Get more data!\n')
          }
-         bw_mu = AdjustBW1(kernel=kernel,bopt=bw_mu,npoly=npoly,dataType=optns$dataType,nder=nder)
+         # Uncomment to ensure MATLAB compatibility (AdjustBW1 is removed (3-Jun-16); check older versions.)
+         # bw_mu = AdjustBW1(kernel=kernel,bopt=bw_mu,npoly=npoly,dataType=optns$dataType,nder=nder)
          # get the geometric mean between the minimum bandwidth and GCV bandwidth to estimnate the mean function (below)         
          if ( methodBwMu == 'GMeanAndGCV') {
            minbw = Minb( unlist(t),2)
@@ -60,8 +61,6 @@ GetSmoothedMeanCurve <- function (y, t, obsGrid, regGrid, optns){
   
   result <- list( 'mu' = mu, 'muDense'= muDense, 'bw_mu' = bw_mu);
   class(result) <- "SMC"
-  # Garbage Collection
-  gc()
   return(result)
 }
 

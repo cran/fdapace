@@ -51,7 +51,7 @@ Eigen::MatrixXd RmullwlskCC( const Eigen::Map<Eigen::VectorXd> & bw, const std::
   
   Eigen::MatrixXd mu(xgrid.size(), ygrid.size());
   mu.setZero();    
-  double bufSmall = pow(double(10),-6);
+  const  double bufSmall = 1e-6; // pow(double(10),-6);
 
   for (unsigned int j = 0; j != ygridN; ++j) { 
     for (unsigned int i = 0; i != xgridN; ++i) {  
@@ -72,6 +72,10 @@ Eigen::MatrixXd RmullwlskCC( const Eigen::Map<Eigen::VectorXd> & bw, const std::
           indx.push_back(y);
         }
       }  
+      
+     //  for (unsigned int y = 0; y != indx.size(); ++y){
+     //    Rcpp::Rcout << "indx.at(y): " << indx.at(y)<< ", ";
+     //  }
 
       unsigned int indxSize = indx.size();
       Eigen::VectorXd lw(indxSize);  
@@ -140,6 +144,7 @@ Eigen::MatrixXd RmullwlskCC( const Eigen::Map<Eigen::VectorXd> & bw, const std::
         X.col(2) = lx.row(1).array() - ygrid(j); 
         Eigen::LDLT<Eigen::MatrixXd> ldlt_XTWX(X.transpose() * temp.asDiagonal() *X);
         // The solver should stop if the value is NaN. See the HOLE example in gcvlwls2dV2.
+        // Rcpp::Rcout << X << std::endl;
         Eigen::VectorXd beta = ldlt_XTWX.solve(X.transpose() * temp.asDiagonal() * ly);  
         mu(i,j)=beta(0); 
       } else if(meter < 3){

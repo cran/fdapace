@@ -13,7 +13,7 @@
 #' pts <- seq(0, 1, by=0.05)
 #' sampWiener <- Wiener(n, pts)
 #' sampWiener <- Sparsify(sampWiener, pts, 10)
-#' res1 <- FPCA(sampWiener$yList, sampWiener$tList, 
+#' res1 <- FPCA(sampWiener$Ly, sampWiener$Lt, 
 #'             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=FALSE))
 #' CreateDiagnosticsPlot(res1)
 #' @export
@@ -27,7 +27,7 @@ CreateDiagnosticsPlot <-function(fpcaObj, openNewDev = FALSE){
   } else {
     
     #if(is.null(derOptns) || !is.list(derOptns)){ 
-    t = fpcaObj$inputData$t
+    t = fpcaObj$inputData$Lt
     if(openNewDev){ 
       dev.new(width=6.2, height=6.2, noRStudioGD=TRUE) ; 
     }
@@ -59,7 +59,7 @@ CreateDiagnosticsPlot <-function(fpcaObj, openNewDev = FALSE){
             main=paste(collapse='', c("First ", as.character(k), " Eigenfunctions"))  , xlab='s', ylab='') 
     grid()
     matlines(workGrid, fpcaObj$phi[,1:k] ) 
-    
+    legend("topright", col=1:k, lty=1:k, legend = do.call(expression, sapply(1:k, function(u) return(bquote(phi[ .(u) ])))), border = FALSE, fill=FALSE)
     # } else {
     #   
     #   derOptns <- SetDerOptions(fpcaObj,derOptns = derOptns) 

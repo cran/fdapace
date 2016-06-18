@@ -5,7 +5,7 @@
 #' @param optns A list of options control parameters specified by \code{list(name=value)}. See `Details'.
 #'
 #' See '?FPCAfor more details. Usually users are not supposed to use this function directly.
-#'
+#' @export
 
 
 SetOptions = function(y, t, optns){
@@ -41,17 +41,25 @@ SetOptions = function(y, t, optns){
   useBinnedCov = optns[['useBinnedCov']]
   lean = optns[['lean']]
 
-  if(is.null(userBwMu)){ # bandwidth choice for mean function is using CV or GCV
-    userBwMu = 0;   
-  }
   if(is.null(methodBwMu)){ # bandwidth choice for mean function is GCV if userBwMu = 0
-    methodBwMu = 'GMeanAndGCV';  
+    #methodBwMu = 'GMeanAndGCV';  
+    methodBwMu = 'Default'
   }
-  if(is.null(userBwCov)){ # bandwidth choice for covariance function is CV or GCV
-    userBwCov = 0; 
+  if(is.null(userBwMu) && methodBwMu == 'Default'){ # bandwidth choice for mean function is using CV or GCV
+    userBwMu = 0.05 * diff(range(unlist(t)));   
+  } 
+  if(is.null(userBwMu) && methodBwMu != 'Default'){
+    userBwMu = 0.0;
   }
   if(is.null(methodBwCov)){  # bandwidth choice for covariance function is GCV if userBwCov = c(0,0)
-    methodBwCov = 'GMeanAndGCV';
+    #methodBwCov = 'GMeanAndGCV';
+    methodBwCov = 'Default';
+  }
+  if(is.null(userBwCov) && methodBwCov == 'Default'){ # bandwidth choice for covariance function is CV or GCV
+    userBwCov = 0.10 * diff(range(unlist(t))); 
+  }
+  if(is.null(userBwCov) && methodBwCov != 'Default'){
+    userBwCov = 0.0;
   }
   #if(is.null(ngrid1)){ # number of support points for the covariance surface 
   #  ngrid1 = 30;
@@ -69,14 +77,18 @@ SetOptions = function(y, t, optns){
   if(is.null(FVEthreshold)){  # Default Value for the Fraction-of-Variance-Explained
      FVEthreshold = 0.9999;
   }
-  if(is.null(maxK)){ # maximum number of principal components to consider
-    maxK = min(20, length(y)-1);   
-  }
   if(is.null(dataType)){ #do we have dataType or sparse functional data
     dataType = IsRegular(t);    
   }
   if (is.null(fitEigenValues)) {
     fitEigenValues <- FALSE
+  }
+  if(is.null(methodMuCovEst)){
+    if (dataType == 'Sparse'){
+      methodMuCovEst = 'smooth'; #In the odd case that somehow we use this...
+    } else {
+      methodMuCovEst = 'cross-sectional';
+    }
   }
   if (fitEigenValues && dataType == 'Dense') {
     stop('Fit method only apply to sparse data')
@@ -92,6 +104,12 @@ SetOptions = function(y, t, optns){
       nRegGrid = 51;
     }    
   }
+  if(is.null(maxK)){ # maximum number of principal components to consider
+    maxK = min( nRegGrid-2, length(y)-2);   
+    if(methodMuCovEst == 'smooth'){
+      maxK = min( maxK, 20) 
+    }
+  }
   methodNames = c("IN", "CE");
   if(!is.null(methodXi) && !(methodXi %in% methodNames)){
     cat(paste('methodXi', methodXi, 'is unrecognizable! Reset to automatic selection now!\n')); 
@@ -103,7 +121,7 @@ SetOptions = function(y, t, optns){
     } else if(dataType == 'Sparse'){
       methodXi = "CE";
     } else if(dataType == 'DenseWithMV'){
-      methodXi = "IN";
+      methodXi = "CE"; # We will see how IN can work here
     } else { # for dataType = p>>n
       methodXi = "IN";
     }
@@ -159,7 +177,8 @@ SetOptions = function(y, t, optns){
     diagnosticsPlot = FALSE;
   }
   if(is.null(rho)){ # truncation threshold for the iterative residual that is used
-    if (!is.null(userSigma2)) { # no regularization if sigma2 is specified
+    # no regularization if sigma2 is specified or assume no measurement error.
+    if (!is.null(userSigma2) || error == FALSE) { 
       rho <- 'no'
     } else {
       rho <- 'cv'
@@ -174,9 +193,6 @@ SetOptions = function(y, t, optns){
   if(is.null(userCov)){
     userCov <- NULL
   }
-  #if(is.null(methodMu)){ # method to estimate mu
-  #  methodMu <- 'PACE'
-  #}
   if(is.null(outPercent)){ 
     outPercent <- c(0,1)
   }  
@@ -204,13 +220,6 @@ SetOptions = function(y, t, optns){
   }
   if(is.null(lean)){ 
     lean = FALSE;
-  }
-  if(is.null(methodMuCovEst)){
-    if (dataType == 'Sparse'){
-      methodMuCovEst = 'smooth'; #In the odd case that somehow we use this...
-    } else {
-      methodMuCovEst = 'cross-sectional';
-    }
   }
   # if (!all.equal(outPercent, c(0, 1)) && methodMuCovEst == 'cross-sectional') {
     # stop('outPercent not supported for cross-sectional covariance estimate')

@@ -47,6 +47,7 @@ GetCovDense <- function(ymat, mu, optns) {
       if (!is.null(optns[['userSigma2']])) {
         sigma2 <- optns[['userSigma2']]
       } else {
+        #browser()
         ord <- 2 
         sigma2 <- mean(diff(t(ymat), differences=ord)^2, na.rm=TRUE) / 
                   choose(2 * ord, ord)
@@ -59,8 +60,6 @@ GetCovDense <- function(ymat, mu, optns) {
     ret = list('rawCov' = NULL, 'smoothCov' = K, 'bwCov' = NULL,
      'sigma2' = sigma2, outGrid = NULL)
     class(ret) = "SmoothCov"
-    # Garbage Collection
-    gc()
     return(ret)
   # } else {
     # stop('optns$muCovEstMethod is unknown!\n')

@@ -1,6 +1,7 @@
 #' Fitted functional sample from FPCA object
 #' 
 #' Combine the zero-meaned fitted values and the interpolated mean to get the fitted values for the trajectories or the derivatives of these trajectories.
+#' Estimates are given on the work-grid, not on the observation grid. Use ConvertSupport to map the estimates to your desired domain.
 #' 
 #' @param object A object of class FPCA returned by the function FPCA().   
 #' @param k The integer number of the first k components used for the representation. (default: length(fpcaObj$lambda ))
@@ -21,7 +22,7 @@
 #' pts <- seq(0, 1, by=0.05)
 #' sampWiener <- Wiener(n, pts)
 #' sampWiener <- Sparsify(sampWiener, pts, 10)
-#' res <- FPCA(sampWiener$yList, sampWiener$tList, 
+#' res <- FPCA(sampWiener$Ly, sampWiener$Lt, 
 #'             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=TRUE))
 #' fittedY <- fitted(res)
 #' @references

@@ -10,6 +10,7 @@
 #' @param Z Vector N-1 Vector of length N with the scalar function values
 #' @param Zmu Scalar with the mean of Z (if NULL it will be automaticall estimated)
 #' @param support Vector of unique and sorted values for the support of the smoothed cross-covariance function (if NULL it will be automatically estimated)
+#' @param kern Kernel type to be used. See ?FPCA for more details. (defult: 'gauss')
 #' If the variables Ly1 is in matrix form the data are assumed dense and only the raw cross-covariance is returned.
 #' @return A list containing:
 #' \item{smoothedCC}{The smoothed cross-covariance as a vector}
@@ -17,16 +18,20 @@
 #' \item{bw}{The bandwidth used for smoohting as a scaler}
 #' \item{score}{The GCV score associated with the scalar used}
 #' @examples
-#' yList <- list( runif(5),  c(1:3), c(2:4), c(4))
-#' tList <- list( c(1:5), c(1:3), c(1:3), 4)
+#' Ly <- list( runif(5),  c(1:3), c(2:4), c(4))
+#' Lt <- list( c(1:5), c(1:3), c(1:3), 4)
 #' Z = rep(4,4) # Constant vector so the covariance has to be zero.
-#' sccObj = GetCrCovYZ(bw=1, Z= Z, Ly=yList, Lt=tList, Ymu=rep(4,5))
+#' sccObj = GetCrCovYZ(bw=1, Z= Z, Ly=Ly, Lt=Lt, Ymu=rep(4,5))
 #' @references
 #' \cite{Yang, Wenjing, Hans-Georg Mueller, and Ulrich Stadtmueller. "Functional singular component analysis." Journal of the Royal Statistical Society: Series B (Statistical Methodology) 73.3 (2011): 303-324}
 #' @export
 
-GetCrCovYZ <- function(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL, support = NULL){
+GetCrCovYZ <- function(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL, support = NULL, kern='gauss') {
    
+  if (is.null(bw) && kern != 'gauss') {
+    stop('Cannot select bandwidth for non-Gaussian kernels')
+  }
+
   # If only Ly and Z are available assume DENSE data
   if( is.matrix(Ly) && is.null(Lt) && is.null(Ymu) ){
     rawCC <- GetRawCrCovFuncScal(Ly = Ly, Z = Z)
@@ -56,21 +61,21 @@ GetCrCovYZ <- function(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL, supp
 
   # If the bandwidth is known already smooth the raw CrCov
   if( is.numeric(bw) ){
-    smoothedCC <- smoothRCC(rawCC, bw, obsGrid )
+    smoothedCC <- smoothRCC(rawCC, bw, obsGrid, kern=kern)
     score = GCVgauss1D( smoothedY = smoothedCC, smoothedX = obsGrid, 
                         rawX = rawCC$tpairn, rawY = rawCC$rawCCov, bw = bw)
     return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw = bw, score = score) )
   # If the bandwidth is unknown use GCV to take find it
   } else {
     # Construct candidate bw's
-    h0 = 2.0 * Minb( sort(ulLt), 2+1); # 2x the bandwidth needed for at least 3 points in a window
+    h0 = 1.5 * Minb( sort(ulLt), 2+1); # 1.5x the bandwidth needed for at least 3 points in a window
     r = diff(range(ulLt))    
     q = (r/(4*h0))^(1/9);   
     bwCandidates = sort(q^(0:19)*h0);
     # Find their associated GCV scores
     gcvScores = rep(Inf, length(bwCandidates))
     for (i in 1:length(bwCandidates)){
-      smoothedCC <- try(silent=TRUE, smoothRCC(rawCC, bw = bwCandidates[i], xout = obsGrid ))
+      smoothedCC <- try(silent=TRUE, smoothRCC(rawCC, bw = bwCandidates[i], xout = obsGrid, kern=kern))
       if( is.numeric(smoothedCC) ){
         gcvScores[i] = GCVgauss1D( smoothedY = smoothedCC, smoothedX = obsGrid, 
                                    rawX = rawCC$tpairn, rawY = rawCC$rawCCov, bw = bwCandidates[i])
@@ -80,7 +85,7 @@ GetCrCovYZ <- function(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL, supp
     # Pick the one with the smallest score
     bInd = which(gcvScores == min(gcvScores, na.rm=TRUE));
     bOpt = max(bwCandidates[bInd]);
-    smoothedCC <- smoothRCC( rawCC, bw = bOpt, obsGrid )
+    smoothedCC <- smoothRCC( rawCC, bw = bOpt, obsGrid, kern=kern )
     return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw = bOpt, score = min(gcvScores, na.rm=TRUE)) )
   }  
 }
@@ -90,10 +95,10 @@ GetCrCovYZ <- function(bw = NULL, Z, Zmu = NULL, Ly, Lt = NULL, Ymu = NULL, supp
 # bw      : scalar
 # xout    : vector M-1
 # returns : vector M-1
-smoothRCC <- function(rCC,bw,xout){
+smoothRCC <- function(rCC,bw,xout, kern='gauss'){
   x = matrix( unlist(rCC),  ncol=2)
   x= x[order(x[,1]),]
-  return( Lwls1D(bw=bw, win=rep(1,nrow(x)), yin=x[,2], xin=x[,1], 'gauss', xout=xout) ) 
+  return( Lwls1D(bw=bw, win=rep(1,nrow(x)), yin=x[,2], xin=x[,1], kern, xout=xout) ) 
 }
 
 # Calculate GCV cost off smoothed sample assuming a Gaussian kernel

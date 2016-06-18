@@ -5,6 +5,7 @@
 #' @param t is a n-by-1 list of vectors 
 #' @param optns is an initialized option list
 #' @param n is a total number of sample curves
+#' @export
 
 CheckOptions = function(t,optns,n){
   
@@ -17,7 +18,7 @@ CheckOptions = function(t,optns,n){
     # bandwidth Bhoice for mean function is using CV or GCV
     stop("FPCA is aborted because the argument: userBwMu is invalid!\n"); 
   }
-  if( !(  any(optns[['methodBwMu']] == c('CV','GCV','GMeanAndGCV')) )){ 
+  if( !(  any(optns[['methodBwMu']] == c('Default','CV','GCV','GMeanAndGCV')) )){ 
     # bandwidth choice for mean function is GCV if userBwMu = 0
     stop("FPCA is aborted because the argument: methodBwMu is invalid!\n"); 
   }
@@ -25,7 +26,7 @@ CheckOptions = function(t,optns,n){
     # bandwidth choice for covariance function is CV or GCV
     stop("FPCA is aborted because the argument: userBwCov is invalid!\n"); 
   }
-  if( !(  any(optns[['methodBwCov']] == c('CV','GCV','GMeanAndGCV') ) )){ 
+  if( !(  any(optns[['methodBwCov']] == c('Default','CV','GCV','GMeanAndGCV') ) )){ 
     # bandwidth choice for covariance function is GCV if userBwCov = c(0,0)
     stop("FPCA is aborted because the argument: methodBwCov is invalid!\n");  
   }
@@ -78,9 +79,9 @@ CheckOptions = function(t,optns,n){
     #method to estimate the PC scores
     stop("FPCA is aborted because the argument: methodXi is invalid!\n");   
   }
-  if (optns[['methodXi']] == 'IN' && optns[['dataType']] != 'Dense') {
-    stop("integration method can only be applied on dense data now!")
-  }
+  # if (optns[['methodXi']] == 'IN' && optns[['dataType']] != 'Dense') {
+    # stop("integration method can only be applied on dense data now!")
+  # }
   if(!(any(optns[['kernel']] == c('epan','gauss','rect','quar','gausvar')))){ 
     #method to estimate the PC scores
     stop("FPCA is aborted because the argument: kernel is invalid!\n");   
@@ -152,6 +153,9 @@ CheckOptions = function(t,optns,n){
   if(!(any(optns[['methodMuCovEst']] == c('smooth', 'cross-sectional')))){
     stop("FPCA is aborted because the argument: methodMuCovEst is invalid!\n");    
   }
+#  if (optns[['methodMuCovEst']] == 'smooth' && optns[['dataType']] == 'DenseWithMV') {
+#    stop('Smoothing method not supported for \'DenseWithMV\' dataType. Use \'Sparse\' dataType instead')
+#  }
 
 }
 

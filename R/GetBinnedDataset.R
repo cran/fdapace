@@ -30,6 +30,8 @@ GetBinnedDataset <- function (y, t, optns){
       BinDataOutput$newt = t;
       BinDataOutput$newy = y;
       return( BinDataOutput )
+    } else if (optns$useBinnedData == 'AUTO') {
+      warning('Automatically binning measurements. To turn off this warning set option useBinnedData to \'FORCE\' or \'OFF\'')
     }
   }
   # otherwise use the one provided by the user (ceiled)
@@ -45,10 +47,9 @@ GetBinnedDataset <- function (y, t, optns){
     # BinDataOutput$newt[[i]] = res$midpoint;   
     # BinDataOutput$newy[[i]] = res$newy;      
   # }
-     
-  result <- list( 'newt' = BinDataOutput$newt, 'newy' = BinDataOutput$newy);
-  # Garbage Collection
-  gc()
+
+  result <- list( 'newt' = BinDataOutput$newt, 'newy' = BinDataOutput$newy,
+                 numBins = numBins)
   return(result)
 }
 

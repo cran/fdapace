@@ -10,7 +10,10 @@
 #' @param Lt2 List of N vectors with timing information (X)
 #' @param Ymu2 Vector Q-1 Vector of length nObsGrid containing the mean function estimate (You can get that from FPCA) (X)
 #' @param bw2 Scalar bandwidth for smoothing the cross-covariance function (if NULL it will be automatically estimated) (X)
-#' @param useGAM Indicator to use gam smoothing instead of local-linear smoothing (semi-parametric option)
+#' @param useGAM Indicator to use gam smoothing instead of local-linear smoothing (semi-parametric option) (default: FALSE)
+#' @param rmDiag Indicator to remove the diagonal element when smoothing (default: FALSE)
+#' @param kern String specifying the kernel type (default: FALSE;  see ?FPCA for details)
+#' @param bwRoutine String specifying the routine used to find the optimal bandwidth 'grid-search', 'bobyqa', 'l-bfgs-b' (default: 'l-bfgs-b')
 #' If the variables Ly1 and Ly2 are in matrix form the data are assumed dense and only the raw cross-covariance is returned.
 #' @return A list containing:
 #' \item{smoothedCC}{The smoothed cross-covariance as a matrix (currently only 51 by 51)}
@@ -31,7 +34,16 @@
 #' \cite{Yang, Wenjing, Hans-Georg Mueller, and Ulrich Stadtmueller. "Functional singular component analysis." Journal of the Royal Statistical Society: Series B (Statistical Methodology) 73.3 (2011): 303-324}
 #' @export
 
-GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2, Lt2 = NULL, Ymu2 = NULL, useGAM = FALSE){
+GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2, Lt2 = NULL, Ymu2 = NULL, 
+                       useGAM = FALSE, rmDiag=FALSE, kern='gauss', bwRoutine = 'l-bfgs-b') {
+  
+  if (kern != 'gauss' && (is.null(bw1) || is.null(bw2))) {
+    stop('Cannot select bandwidth for non-Gaussian kernel')
+  }
+  
+  if( !(bwRoutine %in% c('grid-search', 'bobyqa', 'l-bfgs-b') ) ){ 
+    stop("'bwRoutine' argument is invalid.")
+  }
   
   # If only Ly1 and Ly2 are available assume DENSE data
   if( is.matrix(Ly1) && is.null(Lt1) && is.null(Ymu1) && is.matrix(Ly2) && is.null(Lt2) && is.null(Ymu2)){
@@ -46,6 +58,12 @@ GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2
   
   # Get the Raw Cross-covariance    
   rawCC = GetRawCrCovFuncFunc(Ly1 = Ly1, Lt1 = Lt1, Ymu1 = Ymu1, Ly2 = Ly2, Lt2 = Lt2, Ymu2 = Ymu2)
+  
+  if (rmDiag) {
+    diagInd <- rawCC$tpairn[, 1] == rawCC$tpairn[, 2]
+    rawCC$tpairn <- rawCC$tpairn[!diagInd, , drop=FALSE]
+    rawCC$rawCCov <- rawCC$rawCCov[!diagInd]
+  }
   
   # Calculate the observation and the working grids
   ulLt1 = unlist(Lt1);             ulLt2 = unlist(Lt2)
@@ -67,71 +85,135 @@ GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2
   
   # If the bandwidth is known already smooth the raw CrCov
   if( is.numeric(bw1) &&  is.numeric(bw2)){
-    smoothedCC <- smoothRCC2D(rcov =rawCC, bw1, bw2, workGrid1, workGrid2)    
+    smoothedCC <- smoothRCC2D(rcov =rawCC, bw1, bw2, workGrid1, workGrid2,
+                              kern=kern)    
+    # potentially incorrect GCV score if the kernel is non-Gaussian
     score = GCVgauss2D(smoothedCC = smoothedCC, smoothGrid = workGrid12, 
-                       rawCC = rawCC$rawCCov, rawGrid = rawCC$tpairn, bw1 = bw1, bw2 = bw2)                      
+                       rawCC = rawCC$rawCCov, rawGrid = rawCC$tpairn, 
+                       bw1 = bw1, bw2 = bw2)                      
     return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw =  c(bw1, bw2), score = score, smoothGrid = workGrid12 ) )
     
-  # If the bandwidths are unknown use GCV to take find it
+    # If the bandwidths are unknown use GCV to take find it
   } else {
     # Construct candidate bw's
-    bwCandidates <- getBWidths(ulLt1, ulLt2)
-    # Find their associated GCV scores 
-    gcvScores = rep(Inf, nrow(bwCandidates)) 
-    for (i in 1:length(bwCandidates)){
-      smoothedCC <- try(silent=TRUE, smoothRCC2D(rcov=rawCC, bw1 = bwCandidates[i,1], 
-                                                 bw2 = bwCandidates[i,2], workGrid1, workGrid2) )
-      if( is.numeric(smoothedCC) ){
-        gcvScores[i] = GCVgauss2D( smoothedCC = smoothedCC, smoothGrid = workGrid12, rawCC = rawCC$rawCCov, 
-                       rawGrid = rawCC$tpairn, bw1 = bwCandidates[i,1], bw2 = bwCandidates[i,2])
+    bwCandidates <- getBWidths(Lt1, Lt2)
+    minGcvScores = Inf
+    
+    if(bwRoutine == 'grid-search'){
+      # Find their associated GCV scores 
+      gcvScores = rep(Inf, nrow(bwCandidates)) 
+      for (i in 1:length(bwCandidates)){
+        gcvScores[i] = theCostFunc(bwCandidates[i,], rawCC, workGrid1, workGrid2, kern, workGrid12)  
+      } 
+      # Pick the one with the smallest score 
+      minimumScore =  min(gcvScores, na.rm=TRUE)
+      if( minimumScore == Inf) {
+        stop("It seems that the minimum GCV score equals infinity. Stopping 'GetCrCovYX'")
       }
-    } 
-    # Pick the one with the smallest score
-    bInd = which(gcvScores == min(gcvScores, na.rm=TRUE));
-    bOpt1 = max(bwCandidates[bInd,1]);
-    bOpt2 = max(bwCandidates[bInd,2]); 
-    smoothedCC <- smoothRCC2D(rcov=rawCC, bw1 =bOpt1, bw2 =bOpt2, workGrid1, workGrid2)
-    return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw = c(bOpt1, bOpt2), smoothGrid = workGrid12, score = min(gcvScores, na.rm=TRUE)) )
+      bInd = which(gcvScores == minimumScore);
+      bOpt1 = max(bwCandidates[bInd,1]);
+      bOpt2 = max(bwCandidates[bInd,2]); 
+      minGcvScores = minimumScore
+    } else {
+      
+      bwRanges = apply(bwCandidates,2, range)
+      upperB = bwRanges[2,]
+      lowerB = bwRanges[1,]
+      
+      if( !is.element('minqa', installed.packages()[,1]) && bwRoutine == 'bobyqa'){
+        warning("Cannot use 'minqa::bobyqa' to find the optimal bandwidths. 'minqa' is not installed. We will do an 'L-BFGS-B' search.")
+        bwRoutine == 'l-bfgs-b'
+      }
+      
+      if( bwRoutine == 'l-bfgs-b' ){
+        theSols = optim(fn = theCostFunc, par = upperB*0.95, # Starting value that "is safe"
+                        upper = upperB, lower = lowerB, method ='L-BFGS-B', control = list(maxit = 51),
+                        rawCC = rawCC, workGrid1 = workGrid1, workGrid2 = workGrid2, kern = kern, workGrid12 = workGrid12) 
+        minGcvScores = theSols$value
+      } else { # when BOBYQA is available
+        theSols = minqa::bobyqa(fn = theCostFunc, par = upperB*0.95, # Starting value that "is safe"
+                                upper = upperB, lower = lowerB, control = list(maxfun = 41),
+                                rawCC, workGrid1, workGrid2, kern, workGrid12) 
+        minGcvScores = theSols$fval
+      }
+      
+      bOpt1 = theSols$par[1]
+      bOpt2 = theSols$par[2]
+      
+      if( bOpt1 > 0.75 * upperB[1] && bOpt2 > 0.75 * upperB[2] ){
+        warning('It seems that the bandwidth selected by the solvers is somewhat large. Maybe you are in local minima.')
+      }
+    }
+    smoothedCC <- smoothRCC2D(rcov=rawCC, bw1 =bOpt1, bw2 =bOpt2, workGrid1, workGrid2, kern=kern)
+    return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw = c(bOpt1, bOpt2), smoothGrid = workGrid12, 
+                  score = minGcvScores) )
   }  
 }
 
-getBWidths <- function(ulLt1, ulLt2){
+theCostFunc <- function(xBW, rawCC, workGrid1, workGrid2, kern, workGrid12){
+  smoothedCC <- try(silent=TRUE, smoothRCC2D(rcov=rawCC, bw1 = xBW[1], bw2 = xBW[2], 
+                                             workGrid1, workGrid2, kern=kern) )
+  if( is.numeric(smoothedCC) ){
+    theCost = GCVgauss2D( smoothedCC = smoothedCC, smoothGrid = workGrid12, 
+                          rawCC = rawCC$rawCCov, rawGrid = rawCC$tpairn, bw1 = xBW[1], bw2 = xBW[2])
+  } else {
+    theCost = Inf
+  }
+  return(theCost)
+}
 
-  bwCandidates <- matrix(rep(0,72),ncol=2)
-  h0 = 2.0 * Minb( sort(ulLt1), 2+1); # 2x the bandwidth needed for at least 3 points in a window
-  r = diff(range(ulLt1))    
-  q = (r/(4*h0))^(1/9);  
-  bwCandidates[,1] = rep( sort(q^( seq(0,12,length.out=6) )*h0), times= 6);
-  h0 = 2.0 * Minb( sort(ulLt2), 2+1); # 2x the bandwidth needed for at least 3 points in a window
-  r1 = diff(range(ulLt2))    
-  q = (r/(4*h0))^(1/9);  
-  bwCandidates[,2] =  rep( sort(q^( seq(0,12,length.out=6) )*h0), each= 6); 
+getBWidths <- function(Lt1, Lt2){
+  
+  numPoints = 10;
+  oldVersion = FALSE
+  if(oldVersion == TRUE){
+    
+ #   bwCandidates <- matrix(rep(0,numPoints * numPoints * 2),ncol=2)
+ #   h0 = 2.0 * Minb( sort(ulLt1), 2+1); # 2x the bandwidth needed for at least 3 points in a window
+ #   r = diff(range(ulLt1))    
+ #   q = (r/(4*h0))^(1/9);  
+ #   bwCandidates[,1] = rep( sort(q^( seq(0,12,length.out=numPoints) )*h0), times= numPoints);
+ #   h0 = 2.0 * Minb( sort(ulLt2), 2+1); # 2x the bandwidth needed for at least 3 points in a window
+ #   r1 = diff(range(ulLt2))    
+ #   q = (r/(4*h0))^(1/9);  
+ #   bwCandidates[,2] = rep( sort(q^( seq(0,12,length.out=numPoints) )*h0), each= numPoints); 
+    
+  } else { 
+    
+    bwCandidates <- matrix(rep(0,numPoints * numPoints * 2),ncol=2) 
+    bwCandidates[,1] = rep( seq( BwNN(Lt1, onlyCov = TRUE, k = 5), BwNN(Lt1, onlyCov = TRUE, k = 45), 
+                                 length.out=numPoints), times= numPoints); 
+    bwCandidates[,2] = rep( seq( BwNN(Lt2, onlyCov = TRUE, k = 5), BwNN(Lt2, onlyCov = TRUE, k = 45), 
+                                 length.out=numPoints), each= numPoints); 
+    
+  } 
   
   return(bwCandidates)
 }
 
-smoothRCC2D <- function(rcov,bw1, bw2, xout1, xout2){
-# Calculate the smooth Covariances between two functional variables
-# rcov    : raw cross covariance list object returned by GetRawCrCovFuncFunc
-# bw1     : scalar
-# bw2     : scalar
-# xout1   : vector M-1
-# xout2   : vector L-1
-# returns : matrix M-L
-  return( Lwls2D( bw = c(bw1, bw2), kern = 'gauss', xin=rcov$tpairn, 
-                           yin=rcov$rawCC, xout1=xout1, xout2=xout2, crosscov=TRUE) )  
+smoothRCC2D <- function(rcov,bw1, bw2, xout1, xout2, kern='gauss'){
+  # Calculate the smooth Covariances between two functional variables
+  # rcov    : raw cross covariance list object returned by GetRawCrCovFuncFunc
+  # bw1     : scalar
+  # bw2     : scalar
+  # xout1   : vector M-1
+  # xout2   : vector L-1
+  # returns : matrix M-L 
+  # browser()
+  return( Lwls2D( bw = c(bw1, bw2), kern = kern, xin=rcov$tpairn, 
+                  yin=rcov$rawCC, xout1=xout1, xout2=xout2, crosscov=TRUE) )  
 }
 
 GCVgauss2D <- function( smoothedCC, smoothGrid, rawCC, rawGrid, bw1, bw2){ 
-# Calculate GCV cost off smoothed sample assuming a Gaussian kernel
-# smoothedY : vector M-1 
-# smoothedX : vector M-1
-# rawX      : vector N-1
-# rawY      : vector N-1
-# bw        : scalar
-# returns   : scalar
+  # Calculate GCV cost off smoothed sample assuming a Gaussian kernel
+  # smoothedY : vector M-1 
+  # smoothedX : vector M-1
+  # rawX      : vector N-1
+  # rawY      : vector N-1
+  # bw        : scalar
+  # returns   : scalar
   obsFit <- interp2lin(smoothGrid[,1], smoothGrid[,2], smoothedCC, as.numeric(rawGrid[, 1]), 
-                              as.numeric(rawGrid[, 2]))    
+                       as.numeric(rawGrid[, 2]))    
   # workaround for degenerate case.
   if (any(is.nan(obsFit))  || any(is.infinite(obsFit))  ){
     return(Inf)

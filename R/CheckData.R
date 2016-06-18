@@ -4,6 +4,7 @@
 #' 
 #' @param y is a n-by-1 list of vectors
 #' @param t is a n-by-1 list of vectors
+#' @export
 
 
 CheckData = function(y,t){
@@ -43,6 +44,9 @@ CheckData = function(y,t){
 
  if(any( unlist( lapply(t, function(x) length(x) != length(unique(x))))) ){
         stop("FPCA is aborted because within-subject 't' members have duplicated values.  Try  \"which( unlist( lapply(t, function(x) length(x) != length(unique(x)))))\" to see potentially problematic entries. \n");
+  }
+  if( any(sapply(t[seq_len(min(3, length(t)))], is.unsorted, na.rm=TRUE)) ) {
+    stop('Each vector in t should be in ascending order')
   }
 
 }

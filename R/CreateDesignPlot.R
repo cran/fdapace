@@ -10,6 +10,7 @@
 #' @param noDiagonal an option specifying plotting the diagonal design points:
 #'                   TRUE:  remove diagonal time pairs
 #'                   FALSE:  do not remove diagonal time pairs
+#' @param addLegend Logical, default TRUE
 #' @param ... Other arguments passed into \code{plot()}. 
 #'
 #' @examples
@@ -18,10 +19,10 @@
 #' pts <- seq(0, 1, by=0.05)
 #' sampWiener <- Wiener(n, pts)
 #' sampWiener <- Sparsify(sampWiener, pts, 10)
-#' CreateDesignPlot(sampWiener$tList, sort(unique(unlist(sampWiener$tList))))
+#' CreateDesignPlot(sampWiener$Lt, sort(unique(unlist(sampWiener$Lt))))
 #' @export
 
-CreateDesignPlot = function(t, obsGrid = NULL, isColorPlot=TRUE, noDiagonal=TRUE, ...){
+CreateDesignPlot = function(t, obsGrid = NULL, isColorPlot=TRUE, noDiagonal=TRUE, addLegend= TRUE, ...){
   
   if( class(t) != 'list'){
     stop("You do need to pass a list argument to 'CreateDesignPlot'!");
@@ -30,7 +31,7 @@ CreateDesignPlot = function(t, obsGrid = NULL, isColorPlot=TRUE, noDiagonal=TRUE
     obsGrid = sort(unique(unlist(t)))
   }
   
-  args1 <- list( main="Design Plot", xlab= 'Observed time grid', ylab= 'Observed time grid')
+  args1 <- list( main="Design Plot", xlab= 'Observed time grid', ylab= 'Observed time grid', addLegend = addLegend)
   inargs <- list(...)
   args1[names(inargs)] <- inargs 
   
@@ -57,6 +58,7 @@ CreateDesignPlot = function(t, obsGrid = NULL, isColorPlot=TRUE, noDiagonal=TRUE
 
 createBlackPlot = function(res, obsGrid, args1){
   
+  args1$addLegend = NULL
   if( is.null(args1$col)){
     args1$col = 'black'
   }
@@ -78,8 +80,11 @@ createBlackPlot = function(res, obsGrid, args1){
 createColorPlot = function(res, obsGrid, args1){
   
   res[res > 4] = 4;
-  notZero <- res != 0
+  notZero <- which(res != 0, arr.ind=TRUE)
   nnres <- res[notZero]
+  
+  addLegend <- args1$addLegend;
+  args1$addLegend <- NULL 
   
   if ( is.null(args1$col) ){
     colVec <- c(`1`='black', `2`='blue', `3`='green', `4`='red')
@@ -101,27 +106,14 @@ createColorPlot = function(res, obsGrid, args1){
   } else {
     cexVec <- args1$cex;
   }
-  
-  # pchVec <- rep(19, length(colVec))
-  # names(pchVec) <- names(colVec)
-  # if (!is.null(ddd[['pch']])){
-  #   pchVec[] <- ddd[['pch']]
-  # }
-  
-  # cexVec <- seq(from=0.3, by=0.1, length.out=length(colVec))
-  # names(cexVec) <- names(colVec)
-  # if (!is.null(ddd[['cex']])){
-  #   cexVec[] <- ddd[['cex']]
-  # }
-  
-  t1 = rep(obsGrid, times = length(obsGrid))
-  t2 = rep(obsGrid, each = length(obsGrid)) 
-  do.call( plot, c(args1, list( x = t1[notZero], y = t2[notZero]) ))
-  
-  if (!identical(unique(nnres), 1)){
-    legend('right', c('1','2','3','4+'), pch = pchVec, col=colVec, pt.cex=1.5, title = 'Count',bg='white' )
+ 
+  do.call( plot, c(args1, list( x = obsGrid[notZero[, 1]], y = obsGrid[notZero[, 2]]) ))
+
+  if(addLegend){
+    if (!identical(unique(nnres), 1)){
+          legend('right', c('1','2','3','4+'), pch = pchVec, col=colVec, pt.cex=1.5, title = 'Count',bg='white' )
+    }
   }
-  
 }
 
 
