@@ -1,6 +1,6 @@
 ## ----include=FALSE-------------------------------------------------------
 library("knitr") 
-opts_chunk$set(warning=FALSE, fig.width=5, fig.height=5, fig.align='center', cache=TRUE, background='white', highlight=FALSE)
+opts_chunk$set(warning=FALSE, fig.width=6, fig.height=6, fig.align='center', cache=TRUE, background='white', highlight=FALSE)
 # Set hooks
 render_listings()
 
@@ -70,8 +70,8 @@ CreatePathPlot( FPCAsparseMuBW5, subset = 1:3, main = "User-defined bandwidth", 
  FPCAsparseRect <- FPCA(ySparse$yNoisy, ySparse$Lt, optns = list(kernel = 'rect')) # Use rectangular kernel
 
 ## ----eval=FALSE----------------------------------------------------------
-#  SelectK( FPCAsparse, criterion = 'FVE', FVEthreshold = 0.95) # k = 2
-#  SelectK( FPCAsparse, criterion = 'AIC') # k = 2
+#  SelectK( FPCAsparse, criterion = 'FVE', FVEthreshold = 0.95) # K = 2
+#  SelectK( FPCAsparse, criterion = 'AIC') # K = 2
 
 ## ------------------------------------------------------------------------
 fittedCurvesP0 <- fitted(FPCAsparse) # equivalent: fitted(FPCAsparse, derOptns=list(p = 0));
@@ -86,26 +86,25 @@ fittedCurcesP1 <- fitted(FPCAsparse, derOptns=list(p = 1, kernelType = 'epan'))
   Flies <- MakeFPCAInputs(medfly25$ID, medfly25$Days, medfly25$nEggs) 
   fpcaObjFlies <- FPCA(Flies$Ly, Flies$Lt, list(diagnosticsPlot = TRUE, methodMuCovEst = 'smooth', userBwCov = 2)) 
 
-## ----k, fig.show='hold', out.width='.45\\linewidth'----------------------
-  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), main = 'k = 11', pch = 4); grid()
-  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), k = 3, main = 'k = 3', pch = 4) ; grid()  
+## ----K, fig.show='hold', out.width='.45\\linewidth'----------------------
+  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), main = 'K = 11', pch = 4); grid()
+  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', pch = 4) ; grid()  
 
 ## ----outlier, fig.show='hold', out.width='.4\\linewidth'-----------------
-  CreateOutliersPlot(fpcaObjFlies, optns = list(k = 3, variant = 'KDE'))
-  CreateFuncBoxPlot(fpcaObjFlies, xlab = 'Days', ylab = '# of eggs laid', optns = list(k =3, variant='bagplot'))
+  CreateOutliersPlot(fpcaObjFlies, optns = list(K = 3, variant = 'KDE'))
+  CreateFuncBoxPlot(fpcaObjFlies, xlab = 'Days', ylab = '# of eggs laid', optns = list(K =3, variant='bagplot'))
 
 ## ----deriv, fig.show='hold', out.width='.45\\linewidth'------------------
-  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), k = 3, main = 'k = 3', showObs = FALSE) ; grid() 
-  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), k = 3, main = 'k = 3', showObs = FALSE, derOptns = list(p = 1, bw = 1.01 , kernelType = 'epan') ) ; grid() 
+  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', showObs = FALSE) ; grid() 
+  CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', showObs = FALSE, derOptns = list(p = 1, bw = 1.01 , kernelType = 'epan') ) ; grid() 
 
 ## ----bwPlot, fig.width=7, fig.height=3-----------------------------------
 fpcaObjFlies79 <- FPCA(Flies$Ly, Flies$Lt, list(nRegGrid = 79, methodMuCovEst = 'smooth', userBwCov = 2)) # Use 79 equidistant points for the support
 CreateBWPlot(fpcaObjFlies79 , derOptns = list(p = 1, bw = 2.0 , kernelType = 'rect') )
 
 ## ----clustPlot, fig.width=7, fig.height=5.5------------------------------
-A <- FClust(Flies$Ly, Flies$Lt, optnsFPCA = list(methodMuCovEst = 'smooth', userBwCov = 2, FVEthreshold = 0.90))
-B <- FClust(Flies$Ly, Flies$Lt, optnsFPCA = list(methodMuCovEst = 'smooth', userBwCov = 2, FVEthreshold = 0.90), k = 2)
-#  A$clusterObj@bestResult@criterionValue is greater than B$clusterObj@bestResult@criterionValue
-CreatePathPlot( fpcaObjFlies, k=2, showObs=FALSE, lty=1, col= B$cluster, xlab = 'Days', ylab = '# of eggs laid')
+A <- FClust(Flies$Ly, Flies$Lt, optnsFPCA = list(methodMuCovEst = 'smooth', userBwCov = 2, FVEthreshold = 0.90), k = 2)
+# The Neg-Entropy Criterion can be found as: A$clusterObj@bestResult@criterionValue 
+CreatePathPlot( fpcaObjFlies, K=2, showObs=FALSE, lty=1, col= A$cluster, xlab = 'Days', ylab = '# of eggs laid')
 grid()
 

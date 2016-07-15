@@ -4,9 +4,9 @@
 \alias{CreatePathPlot}
 \title{Create the fitted sample path plot based on the results from FPCA().}
 \usage{
-CreatePathPlot(fpcaObj, subset, k = NULL,
+CreatePathPlot(fpcaObj, subset, K = NULL,
   inputData = fpcaObj[["inputData"]], showObs = !is.null(inputData),
-  derOptns = NULL, ...)
+  showMean = FALSE, derOptns = NULL, ...)
 }
 \arguments{
 \item{fpcaObj}{Returned object from FPCA().}
@@ -14,7 +14,7 @@ CreatePathPlot(fpcaObj, subset, k = NULL,
 \item{subset}{A vector of indices or a logical vector for subsetting the
 observations.}
 
-\item{k}{The number of components to reconstruct the fitted sample paths.}
+\item{K}{The number of components to reconstruct the fitted sample paths.}
 
 \item{inputData}{A list of length 2 containing the sparse/dense
 (unsupported yet) observations. \code{inputData} needs to contain two
@@ -22,6 +22,8 @@ fields: \code{Lt} for a list of time points and \code{Ly} for a list of
 observations. Default to the `inputData` field within `fpcaObj`.}
 
 \item{showObs}{Whether to plot the original observations for each subject.}
+
+\item{showMean}{Whether to plot the mean function as a bold solid curve.}
 
 \item{derOptns}{A list of options to control derivation parameters; see `fitted.FPCA'. (default = NULL)}
 

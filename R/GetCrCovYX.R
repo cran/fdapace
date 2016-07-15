@@ -4,17 +4,19 @@
 #' 
 #' @param Ly1 List of N vectors with amplitude information (Y)
 #' @param Lt1 List of N vectors with timing information (Y)
-#' @param Ymu1 Vector Q-1 Vector of length nObsGrid containing the mean function estimate (You can get that from FPCA) (Y)
+#' @param Ymu1 Vector Q-1 Vector of length nObsGrid containing the mean function estimate (Y)
 #' @param bw1 Scalar bandwidth for smoothing the cross-covariance function (if NULL it will be automatically estimated) (Y)
 #' @param Ly2 List of N vectors with amplitude information (X)
 #' @param Lt2 List of N vectors with timing information (X)
-#' @param Ymu2 Vector Q-1 Vector of length nObsGrid containing the mean function estimate (You can get that from FPCA) (X)
+#' @param Ymu2 Vector Q-1 Vector of length nObsGrid containing the mean function estimate (X)
 #' @param bw2 Scalar bandwidth for smoothing the cross-covariance function (if NULL it will be automatically estimated) (X)
 #' @param useGAM Indicator to use gam smoothing instead of local-linear smoothing (semi-parametric option) (default: FALSE)
 #' @param rmDiag Indicator to remove the diagonal element when smoothing (default: FALSE)
 #' @param kern String specifying the kernel type (default: FALSE;  see ?FPCA for details)
 #' @param bwRoutine String specifying the routine used to find the optimal bandwidth 'grid-search', 'bobyqa', 'l-bfgs-b' (default: 'l-bfgs-b')
-#' If the variables Ly1 and Ly2 are in matrix form the data are assumed dense and only the raw cross-covariance is returned.
+#' If the variables Ly1 and Ly2 are in matrix form the data are assumed dense
+#' and only the raw cross-covariance is returned. One can obtain Ymu1 and Ymu2
+#' from \code{FPCA} and \code{ConvertSupport}.
 #' @return A list containing:
 #' \item{smoothedCC}{The smoothed cross-covariance as a matrix (currently only 51 by 51)}
 #' \item{rawCC}{The raw cross-covariance as a list}
@@ -58,11 +60,27 @@ GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2
   
   # Get the Raw Cross-covariance    
   rawCC = GetRawCrCovFuncFunc(Ly1 = Ly1, Lt1 = Lt1, Ymu1 = Ymu1, Ly2 = Ly2, Lt2 = Lt2, Ymu2 = Ymu2)
+  # Use a heuristic to decide when to bin
+  if (!useGAM && sum(duplicated(rawCC$tpairn)) >= 0.2 * length(rawCC$rawCCov)) {
+    # message('Binning rawCC')
+    rawCC <- BinRawCov(rawCC)
+  } else {
+    # rename the fields to be the same as the binned rawCC
+    names(rawCC)[names(rawCC) == 'rawCCov'] <- 'meanVals'
+    names(rawCC)[names(rawCC) == 'tpairn'] <- 'tPairs'
+    rawCC$count <- rep(1, length(rawCC$meanVals))
+  }
   
   if (rmDiag) {
-    diagInd <- rawCC$tpairn[, 1] == rawCC$tpairn[, 2]
-    rawCC$tpairn <- rawCC$tpairn[!diagInd, , drop=FALSE]
-    rawCC$rawCCov <- rawCC$rawCCov[!diagInd]
+    diagInd <- rawCC$tPairs[, 1] == rawCC$tPairs[, 2]
+    rawCC$tDiag <- rawCC$tPairs[diagInd, , drop=FALSE]
+    rawCC$diagMeans <- rawCC$meanVals[diagInd]
+    rawCC$diagCount <- rawCC$count[diagInd]
+    rawCC$diagRSS <- rawCC$RSS[diagInd]
+    rawCC$tPairs <- rawCC$tPairs[!diagInd, , drop=FALSE]
+    rawCC$meanVals <- rawCC$meanVals[!diagInd]
+    rawCC$count <- rawCC$count[!diagInd]
+    rawCC$RSS <- rawCC$RSS[!diagInd]
   }
   
   # Calculate the observation and the working grids
@@ -74,7 +92,8 @@ GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2
   workGrid12 = matrix(c(workGrid1, workGrid2),ncol= 2)
   
   if (useGAM == TRUE){ 
-    Qdata = data.frame(x =  rawCC$tpairn[,1], y = rawCC$tpairn[,2], z = rawCC$rawCCov, group = rawCC$IDs  )
+    # stop('Cannot be used on binned rawCC') # we cannot use binning for useGAM
+    Qdata = data.frame(x =  rawCC$tPairs[,1], y = rawCC$tPairs[,2], z = rawCC$meanVals, group = rawCC$IDs  )
     # I comparsed with 're', ds' and 'gp' too, and 'tp' seems to have a slight edge for what we want
     # myGAM = mgcv::gamm( z ~ s(x,y, bs =c('tp','tp')), random=list(group=~1) , data= Qdata)$gam
     myGAM = mgcv::gam( z ~ s(x,y, bs =c('tp','tp')), data= Qdata)
@@ -89,7 +108,7 @@ GetCrCovYX <- function(bw1 = NULL, bw2 = NULL, Ly1, Lt1 = NULL, Ymu1 = NULL, Ly2
                               kern=kern)    
     # potentially incorrect GCV score if the kernel is non-Gaussian
     score = GCVgauss2D(smoothedCC = smoothedCC, smoothGrid = workGrid12, 
-                       rawCC = rawCC$rawCCov, rawGrid = rawCC$tpairn, 
+                       rawCC = rawCC$meanVals, rawGrid = rawCC$tPairs, 
                        bw1 = bw1, bw2 = bw2)                      
     return ( list(smoothedCC = smoothedCC, rawCC = rawCC, bw =  c(bw1, bw2), score = score, smoothGrid = workGrid12 ) )
     
@@ -155,7 +174,7 @@ theCostFunc <- function(xBW, rawCC, workGrid1, workGrid2, kern, workGrid12){
                                              workGrid1, workGrid2, kern=kern) )
   if( is.numeric(smoothedCC) ){
     theCost = GCVgauss2D( smoothedCC = smoothedCC, smoothGrid = workGrid12, 
-                          rawCC = rawCC$rawCCov, rawGrid = rawCC$tpairn, bw1 = xBW[1], bw2 = xBW[2])
+                          rawCC = rawCC$meanVals, rawGrid = rawCC$tPairs, bw1 = xBW[1], bw2 = xBW[2])
   } else {
     theCost = Inf
   }
@@ -193,15 +212,15 @@ getBWidths <- function(Lt1, Lt2){
 
 smoothRCC2D <- function(rcov,bw1, bw2, xout1, xout2, kern='gauss'){
   # Calculate the smooth Covariances between two functional variables
-  # rcov    : raw cross covariance list object returned by GetRawCrCovFuncFunc
+  # rcov    : raw cross covariance list object returned by BinRawCov(GetRawCrCovFuncFunc())
   # bw1     : scalar
   # bw2     : scalar
   # xout1   : vector M-1
   # xout2   : vector L-1
   # returns : matrix M-L 
   # browser()
-  return( Lwls2D( bw = c(bw1, bw2), kern = kern, xin=rcov$tpairn, 
-                  yin=rcov$rawCC, xout1=xout1, xout2=xout2, crosscov=TRUE) )  
+  return( Lwls2D( bw = c(bw1, bw2), kern = kern, xin=rcov$tPairs, 
+                  yin=rcov$meanVals, win=rcov$count, xout1=xout1, xout2=xout2, crosscov=TRUE) )  
 }
 
 GCVgauss2D <- function( smoothedCC, smoothGrid, rawCC, rawGrid, bw1, bw2){ 
