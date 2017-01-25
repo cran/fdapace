@@ -1,4 +1,4 @@
-#' Make Gaussian Process Dense Functional Data sample                                                             
+#' Make Gaussian Process Dense Functional Data sample
 #' 
 #' Make a Gaussian process dense functional data sample of size n over a [0,1] support.
 #' 
@@ -10,7 +10,7 @@
 #' @param sigma The standard deviation of the Gaussian noise added to each observation points.
 #' @param basisType string specifiying the basis type used; possible options are: 'sin', 'cos' and 'fourier' (default: 'cos') (See code of 'CreateBasis' for implementation details.)
 #'
-#' @return TODO
+#' @return Y: X(t_{j}), Yn: noisy observations
 #' @export
 
 MakeGPFunctionalData <-function(n, M = 100, mu=rep(0,M), K = 2, lambda = rep(1,K), sigma=0, basisType='cos'){
@@ -35,9 +35,9 @@ MakeGPFunctionalData <-function(n, M = 100, mu=rep(0,M), K = 2, lambda = rep(1,K
   if(K != length(lambda)){
       stop("Make sure you provide 'lambda's for all 'K' modes of variation.")
   }
-  if( !(basisType %in% c('cos','sin','fourier'))){
-      stop("Make sure you provide a valid parametric basis.")
-  } 
+  # if( !(basisType %in% c('cos','sin','fourier'))){
+      # stop("Make sure you provide a valid parametric basis.")
+  # } 
    
   Ksi <- apply(matrix(rnorm(n*K), ncol=K), 2, scale) %*% diag(sqrt(lambda))
   Phi <- CreateBasis(pts= s, type= basisType, K = K)

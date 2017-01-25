@@ -3,14 +3,14 @@
 #' Two dimensional local weighted least squares smoother. Only local linear smoother for estimating the original curve is available (no higher order, no derivative). 
 #' @param bw A scalar or a vector of length 2 specifying the bandwidth.
 #' @param kern Kernel used: 'gauss', 'rect', 'gausvar', 'epan' (default), 'quar'.
-#' @param xin An n by 2 dataframe or matrix of x-coordinate.
+#' @param xin An n by 2 data frame or matrix of x-coordinate.
 #' @param yin A vector of y-coordinate.
 #' @param win A vector of weights on the observations. 
 #' @param xout1 a p1-vector of first output coordinate grid. Defaults to the input gridpoints if left unspecified.
 #' @param xout2 a p2-vector of second output coordinate grid. Defaults to the input gridpoints if left unspecified.
 #' @param xout alternative to xout1 and xout2. A matrix of p by 2 specifying the output points (may be inefficient if the size of \code{xout} is small).
 #' @param crosscov using function for cross-covariance estimation (Default: FALSE)
-#' @param subset  a vector with the indeces of x-/y-/w-in to be used (Default: NULL)
+#' @param subset  a vector with the indices of x-/y-/w-in to be used (Default: NULL)
 #' @param method should one try to sort the values xin and yin before using the lwls smoother? if yes ('sort2' - default for non-Gaussian kernels), if no ('plain' - fully stable; de)
 #' @return a p1 by p2 matrix of fitted values if xout is not specified. Otherwise a vector of length p corresponding to the rows of xout. 
 #' @export

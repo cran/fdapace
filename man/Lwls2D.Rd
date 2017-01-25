@@ -13,7 +13,7 @@ Lwls2D(bw, kern = "epan", xin, yin, win = NULL, xout1 = NULL,
 
 \item{kern}{Kernel used: 'gauss', 'rect', 'gausvar', 'epan' (default), 'quar'.}
 
-\item{xin}{An n by 2 dataframe or matrix of x-coordinate.}
+\item{xin}{An n by 2 data frame or matrix of x-coordinate.}
 
 \item{yin}{A vector of y-coordinate.}
 
@@ -25,7 +25,7 @@ Lwls2D(bw, kern = "epan", xin, yin, win = NULL, xout1 = NULL,
 
 \item{xout}{alternative to xout1 and xout2. A matrix of p by 2 specifying the output points (may be inefficient if the size of \code{xout} is small).}
 
-\item{subset}{a vector with the indeces of x-/y-/w-in to be used (Default: NULL)}
+\item{subset}{a vector with the indices of x-/y-/w-in to be used (Default: NULL)}
 
 \item{crosscov}{using function for cross-covariance estimation (Default: FALSE)}
 

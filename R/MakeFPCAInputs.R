@@ -11,6 +11,11 @@
 
 MakeFPCAInputs <- function(IDs = NULL, tVec, yVec, na.rm=FALSE){
 
+  if ((!is.null(IDs) && any(is.na(IDs)) || any(is.na(tVec))) && 
+      na.rm == FALSE) {
+    stop('NAs exist in the IDs or tVec. Use na.rm=TRUE')
+  }
+
   if( !is.null(IDs) ){ 
     if (na.rm) {
       dat <- na.omit(data.frame(IDs, tVec, yVec))

@@ -37,7 +37,7 @@ render_listings()
   L3 <- MakeFPCAInputs(IDs = rep(1:N, each=M),tVec=rep(s,N), t(yTrue))
   FPCAdense <- FPCA(L3$Ly, L3$Lt)   
   
-  # Make a basic diagnostics plot
+  # Plot the FPCA object
   plot(FPCAdense)
   
   # Find the standard deviation associated with each component
@@ -56,7 +56,7 @@ render_listings()
   # Do FPCA on this sparse sample
   # Notice that sparse FPCA will smooth the data internally (Yao et al., 2005)
   # Smoothing is the main computational cost behind sparse FPCA
-  FPCAsparse <- FPCA(ySparse$yNoisy, ySparse$Lt, list(diagnosticsPlot = TRUE))  
+  FPCAsparse <- FPCA(ySparse$yNoisy, ySparse$Lt, list(plot = TRUE))  
   
 
 ## ------------------------------------------------------------------------
@@ -84,7 +84,7 @@ fittedCurcesP1 <- fitted(FPCAsparse, derOptns=list(p = 1, kernelType = 'epan'))
 
   # Turn the original data into a list of paired amplitude and timing lists
   Flies <- MakeFPCAInputs(medfly25$ID, medfly25$Days, medfly25$nEggs) 
-  fpcaObjFlies <- FPCA(Flies$Ly, Flies$Lt, list(diagnosticsPlot = TRUE, methodMuCovEst = 'smooth', userBwCov = 2)) 
+  fpcaObjFlies <- FPCA(Flies$Ly, Flies$Lt, list(plot = TRUE, methodMuCovEst = 'smooth', userBwCov = 2)) 
 
 ## ----K, fig.show='hold', out.width='.45\\linewidth'----------------------
   CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), main = 'K = 11', pch = 4); grid()

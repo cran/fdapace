@@ -8,11 +8,12 @@
 #' @param mu any vector of function to be interpolated
 #' @param phi any matrix, each column containing a function to be interpolated 
 #' @param Cov a square matrix supported on fromGrid * fromGrid, to be interpolated to toGrid * toGrid.
+#' @param isCrossCov logical, indicating whether the input covariance is a cross-covariance. If so then the output is not made symmetric.
 #'
 #' @export
 
 
-ConvertSupport <- function(fromGrid, toGrid, mu=NULL, Cov=NULL, phi=NULL) {
+ConvertSupport <- function(fromGrid, toGrid, mu=NULL, Cov=NULL, phi=NULL, isCrossCov=FALSE) {
 
   # In case the range of toGrid is larger than fromGrid due to numeric error
   buff <- .Machine$double.eps * max(abs(fromGrid)) * 3
@@ -27,12 +28,11 @@ ConvertSupport <- function(fromGrid, toGrid, mu=NULL, Cov=NULL, phi=NULL) {
   if (!is.null(mu)) {# convert mu
     return(MapX1D(fromGrid, mu, toGrid))
   } else if (!is.null(Cov)) {
-    if(!isSymmetric(Cov, tol= buff)){
-      stop("The input matrix 'Cov' is not symmetric.")
-    }
-    gd <- pracma::meshgrid(toGrid) #pracma
+    gd <- expand.grid(X=toGrid, Y=toGrid)
     ret <- matrix(interp2lin(fromGrid, fromGrid, Cov, gd$X, gd$Y), nrow=length(toGrid))
-    ret <- 0.5 * (ret + t(ret))                         # ensure that ret is symmetric
+    if (!isCrossCov) { # ensure that covariance is symmetric
+      ret <- 0.5 * (ret + t(ret))
+    }
     return(ret)
   } else if (!is.null(phi)) {
     return(MapX1D(fromGrid, phi, toGrid))

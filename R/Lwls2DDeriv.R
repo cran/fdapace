@@ -1,24 +1,37 @@
-#' Two dimensional local linear kernel smoother.
+#' Two dimensional local linear kernel smoother with derivatives.
 #'
 #' Two dimensional local weighted least squares smoother. Only local linear smoother for estimating the original curve is available (no higher order, no derivative). 
 #' @param bw A scalar or a vector of length 2 specifying the bandwidth.
 #' @param kern Kernel used: 'gauss', 'rect', 'gausvar', 'epan' (default), 'quar'.
-#' @param xin An n by 2 dataframe or matrix of x-coordinate.
+#' @param xin An n by 2 data frame or matrix of x-coordinate.
 #' @param yin A vector of y-coordinate.
 #' @param win A vector of weights on the observations. 
 #' @param xout1 a p1-vector of first output coordinate grid. Defaults to the input gridpoints if left unspecified.
 #' @param xout2 a p2-vector of second output coordinate grid. Defaults to the input gridpoints if left unspecified.
 #' @param xout alternative to xout1 and xout2. A matrix of p by 2 specifying the output points (may be inefficient if the size of \code{xout} is small).
-#' @param crosscov using function for cross-covariance estimation (Default: FALSE)
-#' @param subset  a vector with the indeces of x-/y-/w-in to be used (Default: NULL)
+#' @param npoly The degree of polynomials (include all \eqn{x^a y^b} terms where \eqn{a + b <= npoly})
+#' @param nder1 Order of derivative in the first direction
+#' @param nder2 Order of derivative in the second direction
+#' @param crosscov using function for cross-covariance estimation (Default: TRUE)
+#' @param subset  a vector with the indices of x-/y-/w-in to be used (Default: NULL)
+#' @param method should one try to sort the values xin and yin before using the lwls smoother? if yes ('sort2' - default for non-Gaussian kernels), if no ('plain' - fully stable; de)
 #' @return a p1 by p2 matrix of fitted values if xout is not specified. Otherwise a vector of length p corresponding to the rows of xout. 
+#' @export
 
+Lwls2DDeriv <- function(
+  bw, kern='epan', xin, yin, win=NULL, xout1=NULL, xout2=NULL, xout=NULL, 
+  npoly=1L, nder1=0L, nder2=0L, subset=NULL, 
+  crosscov = TRUE, method = 'sort2'
+) {
 
-# Uses Pantelis' cpp code.
-Lwls2Dv1 <- function(bw, kern='epan', xin, yin, win=NULL, xout1=NULL, xout2=NULL, xout=NULL, subset=NULL, crosscov = FALSE) {
-  userNumCores = NULL
+  # only support epan kernel now.
+  # stopifnot(kern == 'epan')
+  
   if (length(bw) == 1){
     bw <- c(bw, bw)
+  }
+  if (is.data.frame(xin)) {
+    xin <- as.matrix(xin)
   }
   if (!is.matrix(xin) ||  (dim(xin)[2] != 2) ){
     stop('xin needs to be a n by 2 matrix')
@@ -53,45 +66,22 @@ Lwls2Dv1 <- function(bw, kern='epan', xin, yin, win=NULL, xout1=NULL, xout2=NULL
   storage.mode(xout2) <- 'numeric'
   if (!is.null(xout))
     storage.mode(xout) <- 'numeric' 
+  storage.mode(npoly) <- 'integer'
+  storage.mode(nder1) <- 'integer'
+  storage.mode(nder2) <- 'integer'
   
-  if (!crosscov){
-    if( is.null(userNumCores) ){
-      ret <- Rmullwlsk(bw, kern, t(xin), yin, win, xout1, xout2, FALSE)
-    } else {
-      
-      if ( length(xout1) < userNumCores){  
-        warning('You have allocated more cores than grid-points to evaluate. Nice... \n (We will use only as many cores as grid-points)')
-        userNumCores =  length(xout1)
-      }       
-      if ( length(xout1)*0.01 < userNumCores){   
-        warning('Less than 10000 points to be processed per core. Probably you will get no speed-up.')
-      }
-      if ( !all.equal( xout1, xout2)){
-        stop('Both xout1 and xout2 must be the same to use multicore.')
-      }
-      
-      parSmooth2 <- function(bw, xin, yin, kernel_type, win, nc, xout){ 
-        N = length(xout) 
-        breakPoints =   sort( N-  round(sqrt((1:(nc-1))/nc) * N))
-        m2 <- Matrix::Matrix(0, nrow = N, N, sparse = TRUE)
-        i_indx = c( breakPoints,  N ) # 1 3 7
-        j_indx = c( 1, breakPoints+1) # 1 2 4 
-        for (ij in 1:nc){ 
-          q = i_indx[ij]
-          p = j_indx[ij]
-          m2[(p:q) , (p:N)] =  Rmullwlsk(bw, xin, cxxn= yin, xgrid=xout[p:N], ygrid=xout[p:q], 
-                                         kernel_type=kernel_type, win=rep(1,length(yin)), FALSE, FALSE)
-        } 
-        m3 = as.matrix(m2) + t(as.matrix(m2))
-        diag(m3) = 0.5 * diag(m3)
-        return(m3)
-      }
-      ret = parSmooth2(bw = bw, xin = t(xin), yin = yin, kernel_type = 'epan', win = win, nc = 3,  xout = xout1) 
-    } 
-  } else {
+  if (method == 'sort2') {
+    ord <- order(xin[, 1])
+    xin <- xin[ord, ]
+    yin <- yin[ord]
+    win <- win[ord]
+    # browser()
+    ret <- RmullwlskUniversalDeriv(bw, kern, t(xin), yin, win, 
+      xout1, xout2, npoly, nder1, nder2, FALSE, !crosscov)
+  } else if (method == 'plain') { # MAYBE IMPROVE THIS
     ret <- RmullwlskCC(bw, kern, t(xin), yin, win, xout1, xout2, FALSE)
   }
-  
+
   if (!is.null(xout)) {
     ret <- interp2lin(xout1, xout2, ret, xout[, 1], xout[, 2])
   }

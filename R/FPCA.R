@@ -6,14 +6,17 @@
 #' @param Lt A list of \emph{n} vectors containing the observation time points for each individual corresponding to y. Each vector should be sorted in ascending order.
 #' @param optns A list of options control parameters specified by \code{list(name=value)}. See `Details'.
 #'
-#' @details Available control options are 
+#' @details If the input is sparse data, make sure you check the design plot is dense and the 2D domain is well covered, using \code{plot} or \code{CreateDesignPlot}. Some study design such as snippet data (each subject is observed only on a sub-interval of the period of study) will have an ill-covered design plot, for which the covariance estimate will be unreliable.
+#' 
+#' Available control options are 
 #' \describe{
 #' \item{userBwCov}{The bandwidth value for the smoothed covariance function; positive numeric - default: determine automatically based on 'methodBwCov'}
 #' \item{methodBwCov}{The bandwidth choice method for the smoothed covariance function; 'GMeanAndGCV' (the geometric mean of the GCV bandwidth and the minimum bandwidth),'CV','GCV' - default: 10\% of the support}
 #' \item{userBwMu}{The bandwidth value for the smoothed mean function (using 'CV' or 'GCV'); positive numeric - default: determine automatically based on 'methodBwMu'}
 #' \item{methodBwMu}{The bandwidth choice method for the mean function; 'GMeanAndGCV' (the geometric mean of the GCV bandwidth and the minimum bandwidth),'CV','GCV' - default: 5\% of the support} 
 #' \item{dataType}{The type of design we have (usually distinguishing between sparse or dense functional data); 'Sparse', 'Dense', 'DenseWithMV', 'p>>n' - default:  determine automatically based on 'IsRegular'}
-#' \item{diagnosticsPlot}{Make diagnostics plot (design plot, mean, scree plot and first K (<=3) eigenfunctions); logical - default: FALSE}
+#' \item{diagnosticsPlot}{Deprecated. Same as the option 'plot'}
+#' \item{plot}{Plot FPCA results (design plot, mean, scree plot and first K (<=3) eigenfunctions); logical - default: FALSE}
 #' \item{error}{Assume measurement error in the dataset; logical - default: TRUE}
 #' \item{fitEigenValues}{Whether also to obtain a regression fit of the eigenvalues - default: FALSE}
 #' \item{FVEthreshold}{Fraction-of-Variance-Explained threshold used during the SVD of the fitted covar. function; numeric (0,1] - default: 0.9999}
@@ -21,7 +24,7 @@
 #' \item{kFoldMuCov}{The number of folds to be used for mean and covariance smoothing. Default: 10}
 #' \item{lean}{If TRUE the 'inputData' field in the output list is empty. Default: FALSE}
 #' \item{maxK}{The maximum number of principal components to consider - default: min(20, N-1), N:# of curves}
-#' \item{methodXi}{The method to estimate the PC scores; 'CE' (Condit. Expectation), 'IN' (Numerical Integration) - default: 'CE' for sparse data, 'IN' for dense data.}
+#' \item{methodXi}{The method to estimate the PC scores; 'CE' (Condit. Expectation), 'IN' (Numerical Integration) - default: 'CE' for sparse data and dense data with missing values, 'IN' for dense data.}
 #' \item{methodMuCovEst}{The method to estimate the mean and covariance in the case of dense functional data; 'cross-sectional', 'smooth' - default: 'cross-sectional'}
 #' \item{nRegGrid}{The number of support points in each direction of covariance surface; numeric - default: 51}
 #' \item{numBins}{The number of bins to bin the data into; positive integer > 10, default: NULL}
@@ -34,7 +37,7 @@
 #' \item{useBinnedCov}{Whether to use the binned raw covariance for smoothing; logical - default:TRUE}
 #' \item{userCov}{The user-defined smoothed covariance function; list of two elements: numerical vector 't' and matrix 'cov', 't' must cover the support defined by 'Ly' - default: NULL}
 #' \item{userMu}{The user-defined smoothed mean function; list of two numerical vector 't' and 'mu' of equal size, 't' must cover the support defined 'Ly' - default: NULL}
-#' \item{userSigma2}{The user-defined measurement error variance. A positive scaler. If specified then no regularization is used (rho is set to 'no', unless specified otherwise). Default to `NULL`}
+#' \item{userSigma2}{The user-defined measurement error variance. A positive scalar. If specified then no regularization is used (rho is set to 'no', unless specified otherwise). Default to `NULL`}
 #' \item{verbose}{Display diagnostic messages; logical - default: FALSE}
 #' }
 #' @return A list containing the following fields:
@@ -56,7 +59,6 @@
 #' \item{FVE}{A percentage indicating the total variance explained by chosen FPCs with corresponding 'FVEthreshold'.}
 #' \item{criterionValue}{A scalar specifying the criterion value obtained by the selected number of components with specific methodSelectK: FVE,AIC,BIC values or NULL for fixedK.}
 #' \item{inputData}{A list containting the original 'Ly' and 'Lt' lists used as inputs to FPCA. NULL if 'lean' was specified to be TRUE.}
-#' 
 #' @examples
 #' set.seed(1)
 #' n <- 20
@@ -65,6 +67,7 @@
 #' sampWiener <- Sparsify(sampWiener, pts, 10)
 #' res <- FPCA(sampWiener$Ly, sampWiener$Lt, 
 #'             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=TRUE))
+#' plot(res) # The design plot covers [0, 1] * [0, 1] well.
 #' CreateCovPlot(res, 'Fitted')
 #' @references
 #' \cite{Yao, F., Mueller, H.G., Clifford, A.J., Dueker, S.R., Follett, J., Lin, Y., Buchholz, B., Vogel, J.S. (2003). "Shrinkage estimation for functional principal component scores, with application to the population kinetics of plasma folate." Biometrics 59, 676-685. (Shrinkage estimates for dense data)}
@@ -128,7 +131,9 @@ FPCA = function(Ly, Lt, optns = list()){
                         regGrid < minGrid + diff(rangeGrid) * outPercent[2] +
                         buff]
 
-## Mean function
+  ymat <- List2Mat(Ly, Lt)
+
+  ## Mean function
   # If the user provided a mean function use it
   userMu <- optns$userMu
   if ( is.list(userMu) && (length(userMu$mu) == length(userMu$t))){
@@ -137,7 +142,6 @@ FPCA = function(Ly, Lt, optns = list()){
   } else if (optns$methodMuCovEst == 'smooth') { # smooth mean
     smcObj = GetSmoothedMeanCurve(Ly, Lt, obsGrid, regGrid, optns)
   } else if (optns$methodMuCovEst == 'cross-sectional') { # cross-sectional mean
-    ymat = List2Mat(Ly,Lt)
     smcObj = GetMeanDense(ymat, obsGrid, optns)
   }
 # mu: the smoothed mean curve evaluated at times 'obsGrid'
@@ -228,9 +232,9 @@ FPCA = function(Ly, Lt, optns = list()){
   class(ret) <- 'FPCA'
   ret <- SubsetFPCA(fpcaObj = ret, K = ret$selectK)
   
-  # Make a quick diagnostics plot     
-  if(optns$diagnosticsPlot){
-    CreateDiagnosticsPlot(ret);
+  # Plot the results
+  if(optns$plot){
+    plot.FPCA(ret)
   }
 
   return(ret); 

@@ -1,3 +1,18 @@
+Current version
+=============
+New functionality:
+* Added obsOnly option to CreatePathPlot.
+* Added derivative estimators (FPCAder, fitted.FPCAder)
+* Added functional concurrent correlation (FCCor).
+* Added pairwise curve synchronization for functional data (WFDA).
+* Added optimal designs for longitudinal or functional data (FOptDes).
+* Miscellaneous update to utility functions (CreateBasis, MakeSparseGP)
+
+Changes:
+* Covariance GCV bandwidth is modified to prevent oversmoothing.
+* "Diagnostic plots" are renamed.
+* GetNormalisedSample now uses fitted covariance.
+
 fdapace v0.2.5 (Release date: 14-Jul-2016)
 =============
 Changes:
@@ -8,6 +23,10 @@ Minors:
 * Improved the legend placing in CreateDesignPlot.
 * Plot functions no longer show warnings.
 * Changed clustering example in vignettes.
+
+Minors:
+* Improved the legend placing in CreateDesignPlot.
+* Plot functions no longer show warnings.
 
 fdapace v0.2.0 (Release date: 17-Jun-2016)
 ==============

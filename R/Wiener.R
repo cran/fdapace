@@ -21,7 +21,7 @@ Wiener <- function(n=1, pts=seq(0, 1, length=50), sparsify=NULL, K=50) {
         pts <- t(pts)
         
     basis <- sqrt(2) * sin( pts %*% matrix(1:K - 1/2, 1, K) * pi )
-    samp <- t(basis %*% diag(1 / (1:K - 1/2) / pi) %*% matrix(rnorm(K * n), K, n))
+    samp <- t(basis %*% diag(1 / (1:K - 1/2) / pi, K) %*% matrix(rnorm(K * n), K, n))
     
     if (!is.null(sparsify)) {
         samp <- Sparsify(samp, pts, sparsify)
@@ -37,7 +37,7 @@ Wiener <- function(n=1, pts=seq(0, 1, length=50), sparsify=NULL, K=50) {
 ## sparsity: a vector of integers. The number of observation will be uniform distribution on sparsify.
 #Sparsify <- function(samp, pts, sparsity) {
 #    if (length(sparsity) == 1)
-#            sparsity <- c(sparsity, sparsity) # avoid scaler case
+#            sparsity <- c(sparsity, sparsity) # avoid scalar case
 #    
 #    indEach <- lapply(1:nrow(samp), function(x) 
 #        sort(sample(ncol(samp), sample(sparsity, 1))))
