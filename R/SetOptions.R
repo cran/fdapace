@@ -29,6 +29,7 @@ SetOptions = function(y, t, optns){
   numBins =optns[['numBins']];
   yname =optns[['yname']];
   rho =optns[['rho']];                
+  userRho = optns[['userRho']];
   diagnosticsPlot =optns[['diagnosticsPlot']];
   plot =optns[['plot']]
   if (!is.null(diagnosticsPlot)) {
@@ -45,6 +46,7 @@ SetOptions = function(y, t, optns){
   useBinnedData =optns[['useBinnedData']];
   useBinnedCov = optns[['useBinnedCov']]
   lean = optns[['lean']]
+  useBW1SE =optns[['useBW1SE']];   
 
   if(is.null(methodBwMu)){ # bandwidth choice for mean function is GCV if userBwMu = 0
     #methodBwMu = 'GMeanAndGCV';  
@@ -189,6 +191,9 @@ SetOptions = function(y, t, optns){
       rho <- 'cv'
     }
   }
+  if(is.null(userRho)){
+    userRho = NULL
+  }
   if(is.null(verbose)){ # display diagnostic messages
     verbose = FALSE;
   }  
@@ -226,6 +231,9 @@ SetOptions = function(y, t, optns){
   if(is.null(lean)){ 
     lean = FALSE;
   }
+  if(is.null(useBW1SE)){ 
+    useBW1SE = FALSE;
+  }
   # if (!all.equal(outPercent, c(0, 1)) && methodMuCovEst == 'cross-sectional') {
     # stop('outPercent not supported for cross-sectional covariance estimate')
   # }
@@ -236,7 +244,7 @@ SetOptions = function(y, t, optns){
           nRegGrid = nRegGrid, rotationCut = rotationCut, methodXi = methodXi, kernel = kernel, 
           lean = lean, diagnosticsPlot = diagnosticsPlot, plot=plot, numBins = numBins, useBinnedCov = useBinnedCov, 
           yname = yname,  rho = rho, verbose = verbose, userMu = userMu, userCov = userCov, methodMuCovEst = methodMuCovEst,
-          userSigma2 = userSigma2, outPercent = outPercent, useBinnedData = useBinnedData)
+          userRho = userRho, userSigma2 = userSigma2, outPercent = outPercent, useBinnedData = useBinnedData, useBW1SE = useBW1SE)
 
   invalidNames <- !names(optns) %in% names(retOptns)
   if (any(invalidNames)) {

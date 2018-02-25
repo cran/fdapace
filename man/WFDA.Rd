@@ -14,7 +14,8 @@ WFDA(Ly, Lt, optns = list())
 \item{optns}{A list of options control parameters specified by \code{list(name=value)}. See 'Details'.}
 }
 \value{
-A list containing the following fields: 
+A list containing the following fields:
+\item{optns}{Control options used.}
 \item{lambda}{Penalty parameter used.}
 \item{aligned}{Aligned curves evaluated at time 't'}
 \item{h}{Warping functions for 't'} 
@@ -72,4 +73,3 @@ matplot(x= T, t(sss$aligned), t='l', main = 'Aligned', ylab='Y'); grid()
 
 \cite{Tang, R. and Mueller, H.G. (2009) "Time-synchronized clustering of gene expression trajectories." Biostatistics 10, 32-45}
 }
-

@@ -42,8 +42,8 @@ If measurement error is assumed, the diagonal elements of the raw covariance wil
 
 # Settings
 set.seed(1)
-n <- 100
-nGridIn <- 200
+n <- 75
+nGridIn <- 150
 sparsity <- 5:10 # Sparse data sparsity
 T <- round(seq(0, 1, length.out=nGridIn), 4) # Functional data support
 bw <- 0.1
@@ -78,4 +78,3 @@ withError2D <- FCReg(vars, bw, bw, outGrid)
 
 \cite{Senturk, D., Nguyen, D.V. "Varying Coefficient Models for Sparse Noise-contaminated Longitudinal Data", Statistica Sinica 21(4), (2011): 1831-1856. (Sparse data)}
 }
-

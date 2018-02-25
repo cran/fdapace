@@ -10,7 +10,6 @@
 #' @return A list including the following two fields:
 #' \item{K}{An integer indicating the selected number of components based on given criterion.}
 #' \item{criterion}{The calculated criterion value for the selected number of components, i.e. FVE, AIC or BIC value, NULL for fixedK criterion.}
-#' \item{k}{Same as \code{K} for compatibility. WARNING: This will be removed in the next iteration}
 #'
 #' @export
 
@@ -42,8 +41,7 @@ SelectK = function(fpcaObj, criterion = 'FVE', FVEthreshold = 0.95, Ly = NULL, L
       Ly <- fpcaObj$inputData$Ly
       Lt <- fpcaObj$inputData$Lt
     }
-    if(criterion == 'AIC'){C = 2}
-    else {C = log(length(Ly))}
+    C = ifelse( criterion == 'AIC' , 2 , log(length(Ly)) )
     # FVE is not the selection criterion
     IC = rep(Inf, length(fpcaObj$lambda))
     for(i in 1:length(fpcaObj$lambda)){
@@ -54,8 +52,9 @@ SelectK = function(fpcaObj, criterion = 'FVE', FVEthreshold = 0.95, Ly = NULL, L
       IC[i] = logliktemp + C * i
       if(i > 1 && IC[i] > IC[i-1]){
         # cease whenever AIC/BIC stops decreasing
-        K <- i-1
-        criterion <- IC[i-1]
+        K <- i-1;
+        criterion <- IC[i-1];
+        break;
       } else if(i == length(fpcaObj$lambda)){
         K <- i
         criterion <- IC[i]
@@ -82,5 +81,7 @@ SelectK = function(fpcaObj, criterion = 'FVE', FVEthreshold = 0.95, Ly = NULL, L
   }
   
   # For compatibility reason, k is also returned.
-  return(list(K=K, criterion=criterion, k=K)) 
+  # return(list(K=K, criterion=criterion, k=K)) 
+  return(list(K=K, criterion=criterion)) 
+  
 }
