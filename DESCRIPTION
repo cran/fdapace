@@ -3,8 +3,8 @@ Type: Package
 Title: Functional Data Analysis and Empirical Dynamics
 URL: https://github.com/functionaldata/tPACE
 BugReports: https://github.com/functionaldata/tPACE/issues
-Version: 0.4.0
-Date: 2018-02-15,
+Version: 0.4.1
+Date: 2019-03-19,
 Authors@R: c(person("Xiongtao","Dai", role=c("aut")),
     person("Pantelis Z.","Hadjipantelis", email="pantelis@ucdavis.edu", role=c("aut","cre")),
     person("Kynghee","Han", role="aut"),
@@ -34,9 +34,9 @@ LinkingTo: Rcpp, RcppEigen
 Suggests: plot3D, rgl, aplpack, mgcv, ks, gtools, knitr, EMCluster,
         minqa, testthat
 NeedsCompilation: yes
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-Packaged: 2018-02-24 21:31:27 UTC; pantelis
+Packaged: 2019-03-19 19:24:40 UTC; pantelis
 Author: Xiongtao Dai [aut],
   Pantelis Z. Hadjipantelis [aut, cre],
   Kynghee Han [aut],
@@ -45,4 +45,4 @@ Author: Xiongtao Dai [aut],
   Hans-Georg Mueller [cph, ths],
   Jane-Ling Wang [cph, ths]
 Repository: CRAN
-Date/Publication: 2018-02-25 16:58:57 UTC
+Date/Publication: 2019-03-19 21:30:03 UTC
