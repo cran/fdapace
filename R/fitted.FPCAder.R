@@ -1,7 +1,8 @@
-#' Fitted functional sample from FPCAder object
+#' Fitted functional data for derivatives from the FPCAder object
 #' 
-#' Combine the zero-meaned fitted values and the mean derivative to get the fitted values for the derivatives trajectories
-#' Estimates are given on the work-grid, not on the observation grid. Use ConvertSupport to map the estimates to your desired domain.
+#' Combines the zero-meaned fitted values and the mean derivative to get the fitted values for the derivative trajectories.
+#' Estimates are given on the work-grid, not on the observation grid. Use ConvertSupport to map the 
+#' estimates to your desired domain.
 #' 
 #' @param object A object of class FPCA returned by the function FPCA().   
 #' @param K The integer number of the first K components used for the representation. (default: length(derObj$lambda ))
@@ -19,7 +20,7 @@
 # #'             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=TRUE))
 # #' fittedY <- fitted(res)
 #' @references
-#' \cite{Liu, Bitao, and Hans-Georg Mueller. "Estimating derivatives for samples of sparsely observed functions, with application to online auction dynamics." Journal of the American Statistical Association 104, no. 486 (2009): 704-717. (Sparse data FPCA)}
+#' \cite{Liu, Bitao, and Hans-Georg Müller. "Estimating derivatives for samples of sparsely observed functions, with application to online auction dynamics." Journal of the American Statistical Association 104, no. 486 (2009): 704-717. (Sparse data FPCA)}
 #' @export
 
 

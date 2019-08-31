@@ -2,7 +2,7 @@
 % Please edit documentation in R/FCReg.R
 \name{FCReg}
 \alias{FCReg}
-\title{Functional Concurrent Regression by 2D smoothing method.}
+\title{Functional Concurrent Regression using 2D smoothing}
 \usage{
 FCReg(vars, userBwMu, userBwCov, outGrid, kern = "gauss",
   measurementError = TRUE, diag1D = "none", useGAM = FALSE,
@@ -74,7 +74,7 @@ vars <- list(X_1=X_1sp, Z_2=Z[, 2], Y=Ysp)
 withError2D <- FCReg(vars, bw, bw, outGrid)
 }
 \references{
-\cite{Yao, F., Mueller, H.G., Wang, J.L. "Functional Linear Regression Analysis for Longitudinal Data." Annals of Statistics 33, (2005): 2873-2903.(Dense data)} 
-
-\cite{Senturk, D., Nguyen, D.V. "Varying Coefficient Models for Sparse Noise-contaminated Longitudinal Data", Statistica Sinica 21(4), (2011): 1831-1856. (Sparse data)}
+\cite{Yao, F., Müller, H.G., Wang, J.L. "Functional Linear Regression Analysis for Longitudinal Data." Annals of Statistics 33, (2005): 2873-2903.(Dense data)} 
+\cite{Sentürk, D., Müller, H.G. "Functional varying coefficient models for longitudinal data." J. American Statistical Association, 10, (2010): 1256--1264.}
+\cite{Sentürk, D., Nguyen, D.V. "Varying Coefficient Models for Sparse Noise-contaminated Longitudinal Data", Statistica Sinica 21(4), (2011): 1831-1856. (Sparse data)}
 }

@@ -1,4 +1,4 @@
-#' Create the covariance surface plot based on the results from FPCA() or FPCder().
+#' Creates a covariance surface plot based on the results from FPCA() or FPCder().
 #'
 #' This function will open a new device if not instructed otherwise.
 #'
@@ -54,10 +54,10 @@ CreateCovPlot = function(fpcaObj, covPlotType = 'Fitted', isInteractive = FALSE,
   } 
   
   ## Check if rgl is installed
-  if (isInteractive == FALSE && (!'plot3D' %in% installed.packages()[, ])) {
+  if (isInteractive == FALSE && !requireNamespace("plot3D", quietly=TRUE)) {#(!'plot3D' %in% installed.packages()[, ])
     stop("CreateCovPlot requires package 'plot3D'")
   }
-  if(isInteractive == TRUE && is.element('rgl', installed.packages()[,1]) == FALSE){
+  if(isInteractive == TRUE && !requireNamespace("rgl", quietly=TRUE)){#!is.element('rgl', installed.packages()[,1])
     stop("Interactive plot requires package 'rgl'")
   }
   

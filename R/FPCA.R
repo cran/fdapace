@@ -6,7 +6,10 @@
 #' @param Lt A list of \emph{n} vectors containing the observation time points for each individual corresponding to y. Each vector should be sorted in ascending order.
 #' @param optns A list of options control parameters specified by \code{list(name=value)}. See `Details'.
 #'
-#' @details If the input is sparse data, make sure you check the design plot is dense and the 2D domain is well covered, using \code{plot} or \code{CreateDesignPlot}. Some study design such as snippet data (each subject is observed only on a sub-interval of the period of study) will have an ill-covered design plot, for which the covariance estimate will be unreliable.
+#' @details If the input is sparse data, make sure you check the design plot is dense and the 2D domain is well covered
+#' by support points, using \code{plot} or \code{CreateDesignPlot}. Some study design such as snippet data (where each subject is 
+#' observed only on a sub-interval of the period of study) will have an ill-covered design plot, in which case the nonparametric 
+#' covariance estimate will be unreliable.
 #' 
 #' Available control options are 
 #' \describe{
@@ -19,12 +22,12 @@
 #' \item{plot}{Plot FPCA results (design plot, mean, scree plot and first K (<=3) eigenfunctions); logical - default: FALSE}
 #' \item{error}{Assume measurement error in the dataset; logical - default: TRUE}
 #' \item{fitEigenValues}{Whether also to obtain a regression fit of the eigenvalues - default: FALSE}
-#' \item{FVEthreshold}{Fraction-of-Variance-Explained threshold used during the SVD of the fitted covar. function; numeric (0,1] - default: 0.9999}
+#' \item{FVEthreshold}{Fraction-of-Variance-Explained threshold used during the SVD of the fitted covariance function; numeric (0,1] - default: 0.9999}
 #' \item{kernel}{Smoothing kernel choice, common for mu and covariance; "rect", "gauss", "epan", "gausvar", "quar" - default: "gauss"; dense data are assumed noise-less so no smoothing is performed. }
 #' \item{kFoldMuCov}{The number of folds to be used for mean and covariance smoothing. Default: 10}
 #' \item{lean}{If TRUE the 'inputData' field in the output list is empty. Default: FALSE}
 #' \item{maxK}{The maximum number of principal components to consider - default: min(20, N-1), N:# of curves}
-#' \item{methodXi}{The method to estimate the PC scores; 'CE' (Condit. Expectation), 'IN' (Numerical Integration) - default: 'CE' for sparse data and dense data with missing values, 'IN' for dense data.}
+#' \item{methodXi}{The method to estimate the PC scores; 'CE' (Conditional Expectation), 'IN' (Numerical Integration) - default: 'CE' for sparse data and dense data with missing values, 'IN' for dense data.}
 #' \item{methodMuCovEst}{The method to estimate the mean and covariance in the case of dense functional data; 'cross-sectional', 'smooth' - default: 'cross-sectional'}
 #' \item{nRegGrid}{The number of support points in each direction of covariance surface; numeric - default: 51}
 #' \item{numBins}{The number of bins to bin the data into; positive integer > 10, default: NULL}
@@ -35,9 +38,10 @@
 #' \item{rotationCut}{The 2-element vector in [0,1] indicating the percent of data truncated during sigma^2 estimation; default  (0.25, 0.75))}
 #' \item{useBinnedData}{Should the data be binned? 'FORCE' (Enforce the # of bins), 'AUTO' (Select the # of  bins automatically), 'OFF' (Do not bin) - default: 'AUTO'}
 #' \item{useBinnedCov}{Whether to use the binned raw covariance for smoothing; logical - default:TRUE}
+#' \item{usergrid}{Whether to use observation grid for fitting, if false will use equidistant grid. logical - default:TRUE}
 #' \item{userCov}{The user-defined smoothed covariance function; list of two elements: numerical vector 't' and matrix 'cov', 't' must cover the support defined by 'Ly' - default: NULL}
 #' \item{userMu}{The user-defined smoothed mean function; list of two numerical vector 't' and 'mu' of equal size, 't' must cover the support defined 'Ly' - default: NULL}
-##' \item{userSigma2}{The user-defined measurement error variance. A positive scalar. If specified then no regularization is used (rho is set to 'no', unless specified otherwise). Default to `NULL`}
+#' \item{userSigma2}{The user-defined measurement error variance. A positive scalar. If specified then no regularization is used (rho is set to 'no', unless specified otherwise). Default to `NULL`}
 #' \item{userRho}{The user-defined measurement truncation threshold used for the calculation of functional principal components scores. A positive scalar. Default to `NULL`}
 #' \item{useBW1SE}{Pick the largest bandwidth such that CV-error is within one Standard Error from the minimum CV-error, relevant only if methodBwMu ='CV' and/or methodBwCov ='CV'; logical - default: FALSE}
 #' \item{verbose}{Display diagnostic messages; logical - default: FALSE}
@@ -61,7 +65,7 @@
 #' \item{cumFVE}{A vector with the percentages of the total variance explained by each FPC. Increase to almost 1.}
 #' \item{FVE}{A percentage indicating the total variance explained by chosen FPCs with corresponding 'FVEthreshold'.}
 #' \item{criterionValue}{A scalar specifying the criterion value obtained by the selected number of components with specific methodSelectK: FVE,AIC,BIC values or NULL for fixedK.}
-#' \item{inputData}{A list containting the original 'Ly' and 'Lt' lists used as inputs to FPCA. NULL if 'lean' was specified to be TRUE.}
+#' \item{inputData}{A list containing the original 'Ly' and 'Lt' lists used as inputs to FPCA. NULL if 'lean' was specified to be TRUE.}
 #' @examples
 #' set.seed(1)
 #' n <- 20
@@ -73,13 +77,17 @@
 #' plot(res) # The design plot covers [0, 1] * [0, 1] well.
 #' CreateCovPlot(res, 'Fitted')
 #' @references
-#' \cite{Yao, F., Mueller, H.G., Clifford, A.J., Dueker, S.R., Follett, J., Lin, Y., Buchholz, B., Vogel, J.S. (2003). "Shrinkage estimation for functional principal component scores, with application to the population kinetics of plasma folate." Biometrics 59, 676-685. (Shrinkage estimates for dense data)}
+#' \cite{Yao, F., Müller, H.G., Clifford, A.J., Dueker, S.R., Follett, J., Lin, Y., Buchholz, B., Vogel, J.S. (2003). "Shrinkage estimation 
+#' for functional principal component scores, with application to the population kinetics of plasma folate." Biometrics 59, 676-685. (Shrinkage estimates for dense data)}
 #' 
-#' \cite{Yao, Fang, Hans-Georg Mueller, and Jane-Ling Wang. "Functional data analysis for sparse longitudinal data." Journal of the American Statistical Association 100, no. 470 (2005): 577-590. (Sparse data FPCA)}
+#' \cite{Yao, Fang, Müller, Hans-Georg and Wang, Jane-Ling (2005). "Functional data analysis for sparse longitudinal data." 
+#' Journal of the American Statistical Association 100, no. 470  577-590. (Sparse data FPCA)}
 #'
-#' \cite{Liu, Bitao, and Hans-Georg Mueller. "Estimating derivatives for samples of sparsely observed functions, with application to online auction dynamics." Journal of the American Statistical Association 104, no. 486 (2009): 704-717. (Sparse data FPCA)}
+#' \cite{Liu, Bitao  and Müller, Hans-Georg (2009). "Estimating derivatives for samples of sparsely observed functions, 
+#' with application to online auction dynamics." Journal of the American Statistical Association 104, no. 486 704-717. (Sparse data FPCA)}
 #'
-#' \cite{Castro, P. E., W. H. Lawton, and E. A. Sylvestre. "Principal modes of variation for processes with continuous sample curves." Technometrics 28, no. 4 (1986): 329-337. (Dense data FPCA)}
+#' \cite{Castro, P. E., Lawton, W.H. and Sylvestre, E.A. (1986). "Principal modes of variation for processes with continuous 
+#' sample curves." Technometrics 28, no. 4, 329-337. (modes of variation for dense data FPCA)}
 #' @export
 
 FPCA = function(Ly, Lt, optns = list()){
@@ -88,7 +96,7 @@ FPCA = function(Ly, Lt, optns = list()){
   # Check the data validity for further analysis
   CheckData(Ly,Lt)
   
-  # Force the data to be list of numeric members and handle NA's
+  # Force the data to be numeric member lists and handle NA's
   #Ly <- lapply(Ly, as.numeric) 
   #Lt <- lapply(Lt, as.numeric)
   #Lt <- lapply(Lt, signif, 14)
@@ -106,7 +114,7 @@ FPCA = function(Ly, Lt, optns = list()){
   CheckOptions(Lt, optns,numOfCurves)
 
   # Bin the data
-  if ( optns$useBinnedData != 'OFF'){ 
+  if ( optns$usergrid  == FALSE & optns$useBinnedData != 'OFF'){ 
       BinnedDataset <- GetBinnedDataset(Ly,Lt,optns)
       Ly = BinnedDataset$newy;
       Lt = BinnedDataset$newt; 
@@ -164,7 +172,7 @@ FPCA = function(Ly, Lt, optns = list()){
                                      optns$useBinnedCov) 
   } else if (optns$methodMuCovEst == 'cross-sectional') {
     scsObj = GetCovDense(ymat, mu, optns)
-    if ( length(obsGrid) != length(cutRegGrid) || !all.equal(obsGrid, cutRegGrid)) {
+    if (length(obsGrid) != length(cutRegGrid) || !identical(obsGrid, cutRegGrid)) {
       scsObj$smoothCov = ConvertSupport(obsGrid, cutRegGrid, Cov =
                                         scsObj$smoothCov)
     }
@@ -217,8 +225,8 @@ FPCA = function(Ly, Lt, optns = list()){
     }
     scoresObj <- GetCEScores(Ly, Lt, optns, muObs, truncObsGrid, CovObs, eigObj$lambda, phiObs, sigma2)
   } else if (optns$methodXi == 'IN') {
-    ymat = List2Mat(Ly,Lt)
-    scoresObj <- GetINScores(ymat, Lt, optns, muObs, eigObj$lambda, phiObs, sigma2)
+    scoresObj <- mapply(function(yvec,tvec)
+      GetINScores(yvec, tvec,optns= optns,obsGrid,mu = muObs,lambda =eigObj$lambda ,phi = phiObs,sigma2 = sigma2),Ly,Lt)
   }
 
   if (optns$fitEigenValues) {

@@ -18,23 +18,28 @@
 
 \item{K}{The scalar defining the number of clusters to define; (default: 1).}
 
-\item{xiMethod}{The integration method used to calculate the functional principal component scores ( standard numerical integration 'IN' or conditional expectation 'CE'); default: 'CE'.}
+\item{xiMethod}{The integration method used to calculate the functional principal component scores 
+(standard numerical integration 'IN' or conditional expectation 'CE'); default: 'CE'.}
 
 \item{...}{Not used.}
 }
 \value{
-A matrix of size n-by-k
+A matrix of size n-by-K
 }
 \description{
-Return a matrix with the first k FPC scores according to conditional expectation or numerical integration.
+Return a matrix with the first K FPC scores according to conditional expectation or numerical integration.
 }
 \examples{
 set.seed(1)
-n <- 20
+n <- 50
 pts <- seq(0, 1, by=0.05)
-sampWiener <- Wiener(n, pts)
-sampWiener <- Sparsify(sampWiener, pts, 10)
-res <- FPCA(sampWiener$Ly, sampWiener$Lt)
-res
+# The first n samples are for training and the rest testing
+sampWiener <- Wiener(2 * n, pts)
+sparsity <- 2:5
+train <- Sparsify(sampWiener[seq_len(n), , drop=FALSE], pts, sparsity)
+test <- Sparsify(sampWiener[seq(n + 1, 2 * n), , drop=FALSE], pts, sparsity)
+res <- FPCA(train$Ly, train$Lt)
+pred <- predict(res, test$Ly, test$Lt, K=5)
+plot(pred[, 1], pred[, 2])
 
 }

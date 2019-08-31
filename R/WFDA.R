@@ -1,5 +1,4 @@
-#' Warped Functional DAta Analysis
-#' 
+#' Time-Warping in Functional Data Analysis:
 #' Pairwise curve synchronization for functional data
 #' 
 #' @param Ly A list of \emph{n} vectors containing the observed values for each individual.
@@ -50,13 +49,14 @@
 #' X = rep(list(T),N)
 #'  
 #' sss =  WFDA(Ly = Y, Lt = X, list( choice = 'weighted' ))
-#' par(mfrow=c(1,2))
+#' op <- par(mfrow=c(1,2))
 #' matplot(x= T, t(yMat), t='l', main = 'Raw', ylab = 'Y'); grid()
 #' matplot(x= T, t(sss$aligned), t='l', main = 'Aligned', ylab='Y'); grid() 
+#' par(op)
 #' @references
-#' \cite{Tang, R. and Mueller, H.G. (2008). "Pairwise curve synchronization for functional data." Biometrika 95, 875-889}
+#' \cite{Tang, R. and Müller, H.G. (2008). "Pairwise curve synchronization for functional data." Biometrika 95, 875-889}
 #' 
-#' \cite{Tang, R. and Mueller, H.G. (2009) "Time-synchronized clustering of gene expression trajectories." Biostatistics 10, 32-45}
+#' \cite{Tang, R. and Müller, H.G. (2009) "Time-synchronized clustering of gene expression trajectories." Biostatistics 10, 32-45}
 #' @export
 
 WFDA = function(Ly, Lt, optns = list()){
@@ -199,7 +199,7 @@ WFDA = function(Ly, Lt, optns = list()){
   }
   
   start <- Sys.time ()
-  if( !is.element('minqa', installed.packages()[,1]) && optns$isPWL){
+  if( !requireNamespace("minqa", quietly=TRUE) && optns$isPWL){ #!is.element('minqa', installed.packages()[,1])
     warning("Cannot use 'minqa::bobyqa' to find the optimal knot locations as 'minqa' is not installed. We will do an 'L-BFGS-B' search.") 
     minqaAvail = FALSE
   } else {
@@ -208,7 +208,7 @@ WFDA = function(Ly, Lt, optns = list()){
   
   for(i in seq_len(N)){ # For each curve
     if(optns$verbose){
-      cat('Computing pairwise warping for curve #:', i, ' out of', N, 'curves.\n')
+      message('Computing pairwise warping for curve #:', i, ' out of', N, 'curves.')
     }
     set.seed( i + optns$seed );
     curvei = ymatNormalised[i,];
@@ -224,13 +224,13 @@ WFDA = function(Ly, Lt, optns = list()){
     }
     
     if(optns$choice == 'weighted'){
-      hMat[i,] = apply(hikMat[, ,i] , 2, weighted.mean, distMat[i,])
+      hInvMat[i,] = apply(hikMat[, ,i] , 2, weighted.mean, 1/distMat[i,])
     } else {
-      hMat[i,] = apply(hikMat[  (distMat[i,] <= quantile( distMat[i,], p=0.90) ),  ,i] , 2, mean)
+      hInvMat[i,] = apply(hikMat[  (distMat[i,] <= quantile( distMat[i,], p=0.90) ),  ,i] , 2, mean)
     }
     
-    hInvMat[i,] = approx(y = workGrid, x = hMat[i,], xout = workGrid)$y
-    alignedMat[i,] = approx(x = workGrid, y = ymat[i,], xout = hInvMat[i,])$y
+    hMat[i,] = approx(y = workGrid, x = hInvMat[i,], xout = workGrid)$y
+    alignedMat[i,] = approx(x = workGrid, y = ymat[i,], xout = hMat[i,])$y
     
   }  
   

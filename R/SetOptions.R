@@ -4,7 +4,7 @@
 #' @param t A list of \emph{n} vectors containing the observation time points for each individual corresponding to y.
 #' @param optns A list of options control parameters specified by \code{list(name=value)}. See `Details'.
 #'
-#' See '?FPCAfor more details. Usually users are not supposed to use this function directly.
+#' See '?FPCA for more details. Casual users are not advised to tamper with this function.
 #' @export
 
 
@@ -28,7 +28,8 @@ SetOptions = function(y, t, optns){
   kernel =optns[['kernel']];            
   numBins =optns[['numBins']];
   yname =optns[['yname']];
-  rho =optns[['rho']];                
+  rho =optns[['rho']];
+  usergrid =optns[['usergrid']];
   userRho = optns[['userRho']];
   diagnosticsPlot =optns[['diagnosticsPlot']];
   plot =optns[['plot']]
@@ -112,9 +113,16 @@ SetOptions = function(y, t, optns){
     }    
   }
   if(is.null(maxK)){ # maximum number of principal components to consider
-    maxK = min( nRegGrid-2, length(y)-2);   
+    maxK = min( nRegGrid-2, length(y)-2 );   
     if(methodMuCovEst == 'smooth'){
       maxK = min( maxK, 20) 
+    }
+    if(maxK < 1){
+      message("Automatically defined maxK cannot be less than 1. Reset to maxK = 1 now!\n")
+      maxK = 1
+    }
+    if( length(y) <= 3 ){
+      message("The sample size is less or equal to 3 curves. Be cautious!\n")
     }
   }
   methodNames = c("IN", "CE");
@@ -228,6 +236,9 @@ SetOptions = function(y, t, optns){
       useBinnedCov <- FALSE
     } 
   }
+  if(is.null(usergrid)){ 
+    usergrid = TRUE;
+  }
   if(is.null(lean)){ 
     lean = FALSE;
   }
@@ -243,7 +254,7 @@ SetOptions = function(y, t, optns){
           fitEigenValues = fitEigenValues, maxK = maxK, dataType = dataType, error = error, shrink = shrink,
           nRegGrid = nRegGrid, rotationCut = rotationCut, methodXi = methodXi, kernel = kernel, 
           lean = lean, diagnosticsPlot = diagnosticsPlot, plot=plot, numBins = numBins, useBinnedCov = useBinnedCov, 
-          yname = yname,  rho = rho, verbose = verbose, userMu = userMu, userCov = userCov, methodMuCovEst = methodMuCovEst,
+          usergrid = usergrid, yname = yname,  rho = rho, verbose = verbose, userMu = userMu, userCov = userCov, methodMuCovEst = methodMuCovEst,
           userRho = userRho, userSigma2 = userSigma2, outPercent = outPercent, useBinnedData = useBinnedData, useBW1SE = useBW1SE)
 
   invalidNames <- !names(optns) %in% names(retOptns)

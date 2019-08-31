@@ -1,8 +1,8 @@
 #' Create functional boxplot using 'bagplot', 'KDE' or 'pointwise' methodology
 #'
 #' Using an FPCA object create a functional box-plot based on the function scores.
-#' The green line corresponds to the functional median, the dark grey area to the area spanned
-#' by the curves within the 25th and 75-th percentile and the light gret to the area spanned
+#' The green line corresponds to the functional median, the dark gray area to the area spanned
+#' by the curves within the 25th and 75-th percentile and the light gray to the area spanned
 #' by the curves within the 2.5th and 97.5-th percentile. 
 #'
 #' @param fpcaObj An object of class FPCA returned by the function FPCA().
@@ -11,10 +11,11 @@
 #' 
 #' @details Available control options are 
 #' \describe{
-#' \item{ifactor}{inflation ifactor for the bag-plot defining the loop of bag-plot or multiplying ifactor the KDE pilot bandwidth matrix. (see ?aplpack::compute.bagplot; ?ks::Hpi respectively; default: 2.58; 2 respectively).}
+#' \item{ifactor}{inflation ifactor for the bag-plot defining the loop of bag-plot or multiplying ifactor 
+#' the KDE pilot bandwidth matrix. (see ?aplpack::compute.bagplot; ?ks::Hpi respectively; default: 2.58; 2 respectively).}
 #' \item{variant}{string defining the method used ('KDE', 'pointwise' or 'bagplot') (default: 'bagplot')}
-#' \item{unimodal}{logical specifying if the KDE estimate should be unimodal (default: FALSE, relavant only for variant='KDE')}
-#' \item{addIndx}{vector of indeces corresponding to which samples one should overlay (Default: NULL)}
+#' \item{unimodal}{logical specifying if the KDE estimate should be unimodal (default: FALSE, relevant only for variant='KDE')}
+#' \item{addIndx}{vector of indices corresponding to which samples one should overlay (Default: NULL)}
 #' \item{K}{integer number of the first K components used for the representation. (default: length(fpcaObj$lambda ))} 
 #' }
 #'  
@@ -85,11 +86,11 @@ CreateFuncBoxPlot <- function(fpcaObj, optns = list() , ...){
     stop("This plotting utility function can only implement a 'KDE', 'bagplot' or 'pointwise' mapping.")
     return(NULL)
   }  
-  if ( variant == 'bagplot' && !is.element('aplpack', installed.packages()[,1])){
+  if ( variant == 'bagplot' && !requireNamespace("aplpack", quietly=TRUE) ){ #!is.element('aplpack', installed.packages()[,1])
     warning('Cannot use bagplot because aplpack::compute.bagplot is unavailable; reverting to point-wise');
     variant = 'pointwise'
   }  
-  if ( variant == 'KDE' && !is.element('ks', installed.packages()[,1])){
+  if ( variant == 'KDE' && !requireNamespace("ks", quietly=TRUE) ){ #!is.element('ks', installed.packages()[,1])
     warning('Cannot use KDE because ks::kde is unavailable; reverting to point-wise');
     variant = 'pointwise'
   }
