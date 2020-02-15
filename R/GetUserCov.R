@@ -1,7 +1,9 @@
 GetUserCov <- function(optns, obsGrid, cutRegGrid, buff, ymat) {
 # Is used for the case where the covariance function is provided by the user
-
-
+  
+  optns$userCov$t <- as.numeric(optns$userCov$t)
+  optns$userCov$cov <- as.numeric(optns$userCov$cov)
+  
   rangeUser <- range(optns$userCov$t)
   rangeCut <- range(cutRegGrid)
   if( rangeUser[1] > rangeCut[1] + buff || 

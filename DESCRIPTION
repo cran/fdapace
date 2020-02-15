@@ -3,9 +3,9 @@ Type: Package
 Title: Functional Data Analysis and Empirical Dynamics
 URL: https://github.com/functionaldata/tPACE
 BugReports: https://github.com/functionaldata/tPACE/issues
-Version: 0.5.1
+Version: 0.5.2
 Encoding: UTF-8
-Date: 2019-09-26,
+Date: 2020-02-13,
 Authors@R: c(person("Yaqing","Chen", email="yaqchen@ucdavis.edu", role=c("aut","cre")),
     person("Cody","Carroll", email="cjcarroll@ucdavis.edu", role=c("aut")),
     person("Xiongtao","Dai", email="dai@ucdavis.edu", role=c("aut")),
@@ -15,6 +15,7 @@ Authors@R: c(person("Yaqing","Chen", email="yaqchen@ucdavis.edu", role=c("aut","
     person("Hao","Ji", role=c("aut")),
     person("Shu-Chin", "Lin", role="ctb"),
     person("Paromita", "Dubey", role="ctb"),
+    person("Alvaro", "Gajardo", role="ctb"),
     person("Hans-Georg", "Mueller", role=c("cph","ths","aut")),
     person("Jane-Ling", "Wang", role=c("cph","ths","aut"))) 
 Maintainer: Yaqing Chen <yaqchen@ucdavis.edu>
@@ -43,7 +44,7 @@ Suggests: plot3D, rgl, aplpack, mgcv, ks, gtools, knitr, EMCluster,
 NeedsCompilation: yes
 RoxygenNote: 6.1.1.9000
 VignetteBuilder: knitr
-Packaged: 2019-09-27 16:33:23 UTC; ychen
+Packaged: 2020-02-14 23:32:10 UTC; ychen
 Author: Yaqing Chen [aut, cre],
   Cody Carroll [aut],
   Xiongtao Dai [aut],
@@ -53,7 +54,8 @@ Author: Yaqing Chen [aut, cre],
   Hao Ji [aut],
   Shu-Chin Lin [ctb],
   Paromita Dubey [ctb],
+  Alvaro Gajardo [ctb],
   Hans-Georg Mueller [cph, ths, aut],
   Jane-Ling Wang [cph, ths, aut]
 Repository: CRAN
-Date/Publication: 2019-09-27 17:40:02 UTC
+Date/Publication: 2020-02-15 21:20:11 UTC
