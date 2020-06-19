@@ -1,7 +1,7 @@
-f2f2f64a9b3f1b74a9656f1718c76fd2 *DESCRIPTION
+254d8afc33867ca3235de9ca326aaea5 *DESCRIPTION
 e9edd0a1f46e097c2be8532156bf40ec *LICENSE
 1e9bf7a65d07ad2cc60fc51396514eb8 *NAMESPACE
-2af9f96d1db07c99d9718a0d8c7cf142 *NEWS
+ff475a8a331a9e04c6fafea5616fcd48 *NEWS
 60ceff2e147f4131e85f452610aa82cc *R/BestDes_SR.R
 52d08584053eb5d540a00cb39396dbe6 *R/BestDes_TR.R
 8df04f572c413a6c57b8ae19a4285bcb *R/BinData.R
@@ -33,11 +33,11 @@ bb5fa34ce35b1eab0b76d4a34ab840d3 *R/DynCorr.R
 5c570c3ebf6e6f20a8a141b8f0a7bc64 *R/Dyn_test.R
 41b5999cb8357d1c2583bda074c0a92c *R/FAM.R
 aaf82a793b744e547559c6a26ed88600 *R/FCCor.R
-2f6854406bea75c644603fcd5590d6e0 *R/FCReg.R
+9a4455e106ece70f613d5634654527ee *R/FCReg.R
 7887dd5a0e82c68fab690fd648d58fb1 *R/FClust.R
 137ae34097d49adaa3040230207b1a6e *R/FLM.R
 ad209a96d397278ad80975d42ab9165b *R/FOptDes.R
-c9bd88ffcc1a5c49b533b045c7eb9c1e *R/FPCA.R
+006fa8a0cf83a4a5d635ec93f80f61f5 *R/FPCA.R
 524730c190c97d35723768a3fe688957 *R/FPCAder.R
 3938a7d1296c2638a28ad0a1c3a86a9f *R/FPCquantile.R
 cae1164dab8c2bcb1fe55bdc675bcc17 *R/FSVD.R
@@ -73,7 +73,7 @@ fa404504538e980038bb5fb7e810f4f9 *R/GetSmoothedCovarSurface.R
 b472261a58b151f6fe49ef54dd060fbf *R/GetUserCov.R
 d30209ac2fafc9bbab0f0c147d6daafe *R/GetUserMeanCurve.R
 7297143b9f86bc61ab94d3cafae73e77 *R/HandleNumericsAndNAN.R
-93a4a57145be3e299f39301a2a96c73c *R/IsRegular.R
+b7be199215c329e033abacad318a67e2 *R/IsRegular.R
 b931a5d26744335efcc6c75ed68d0b7e *R/List2Mat.R
 2b9ec6ed9a4fdb3b92a5cc07b6191d1b *R/Lwls1D.R
 a80423d9db9aa7d663800d8e798bc090 *R/Lwls2D.R
@@ -126,9 +126,9 @@ d697ca3629ab2b64274b175bec161aa3 *R/predict.FPCA.R
 05b1fe5b7026c269dee6a74ff7f552ce *README.md
 c04563dbb8b3051d02cad6784a99f429 *build/vignette.rds
 0fe4863dd34afa9d879e34f20824585d *data/medfly25.RData
-d97b26d41a974d757908caa4e1dcccec *inst/doc/fdapaceVig.R
-dcb4cbf6297b3929df3e1006c53a357e *inst/doc/fdapaceVig.Rmd
-b0487ecc047616927b39ef3a5b5a4d51 *inst/doc/fdapaceVig.html
+7232216823db4735ad3e57b2d88dd847 *inst/doc/fdapaceVig.R
+db7bb75e960b9273d0eb4ec26dfc1737 *inst/doc/fdapaceVig.Rmd
+66434a498c3eed6323f326e896f4fa86 *inst/doc/fdapaceVig.html
 ce7bac21cfd2da38308bdafb9148fe9d *man/BwNN.Rd
 ab1911c3eb0ab5f8cb078af8e06ee9cf *man/CheckData.Rd
 69fcb8175afae2ca099f436815e5c32b *man/CheckOptions.Rd
@@ -147,11 +147,11 @@ ba7209ec893d7796b5518a9b5dd007b2 *man/DynCorr.Rd
 a8c452cdb830c91768b8ac08bc20def7 *man/Dyn_test.Rd
 f0fa90142990d29a1771c072a91a29b2 *man/FAM.Rd
 22653908ce91ddaf4a617b33fee3efdd *man/FCCor.Rd
-1375f3d79c104b9882d3b7b3c19a6301 *man/FCReg.Rd
+bf385253784034d834c90c179390a865 *man/FCReg.Rd
 9161e41eb28951f576b6e268667b6824 *man/FClust.Rd
 2a18f43a9ce9e6550a5a8f419b478d50 *man/FLM.Rd
 ec749b9b6f9104d1799a3b22383418ca *man/FOptDes.Rd
-73f12fd9e12f98d8ea33be63fbd28bda *man/FPCA.Rd
+5e2b803470e741168afc790dee2a4abd *man/FPCA.Rd
 0b61a36450b55045845baf4c440c5548 *man/FPCAder.Rd
 12488080016ed0b092bd7b311f2a0df1 *man/FPCquantile.Rd
 29af445388a161eda51b422b2acdddc6 *man/FSVD.Rd
@@ -182,7 +182,7 @@ f21d8dbc19b7055964bb5a682762c961 *man/VCAM.Rd
 ba330c2980ff1dfc5852fa83f430ed3e *man/WFDA.Rd
 566f092b1e42f37cf60484ba617e8081 *man/Wiener.Rd
 b2c78f6ef838358e86d4df759a50b8aa *man/cumtrapzRcpp.Rd
-de259585b055997e4077acf9f935f70a *man/fdapace.Rd
+e61aa15015bc737e839752472cc1de36 *man/fdapace.Rd
 5738e62bf48d1f86eb1a726438c04b0a *man/fitted.FPCA.Rd
 1d75b14f4af44cae761829a9e694bffa *man/fitted.FPCAder.Rd
 b689fe1115f18bf4c0cc7ce37727739b *man/kCFC.Rd
@@ -212,5 +212,5 @@ d698904e4be928dc0ab132a093119e99 *src/cumtrapzRcpp.cpp
 3504fda65c6e13653b9cfc38fb895b92 *src/dropZeroElementsXYWin.cpp
 99d51e3cff6fc571654ed4d3cdd5865d *src/interp2lin.cpp
 15e5aed49ffb73d4d9470b1bd17f990a *src/trapzRcpp.cpp
-dcb4cbf6297b3929df3e1006c53a357e *vignettes/fdapaceVig.Rmd
-7876f0abc8a6bb5c0e2d6a73ea1014a4 *vignettes/roxygen.bib
+db7bb75e960b9273d0eb4ec26dfc1737 *vignettes/fdapaceVig.Rmd
+da232bc7e8b86c2736ebe424dd34673c *vignettes/roxygen.bib

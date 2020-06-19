@@ -1,5 +1,5 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 7) 
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  FPCAobj <- FPCA(Ly=yList, Lt=tList)
@@ -58,7 +58,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## ----eval=TRUE, echo=TRUE-----------------------------------------------------
  FPCAsparseMuBW5 <- FPCA(ySparse$yNoisy, ySparse$Lt, optns= list(userBwMu = 5))
 
-## ----eval=TRUE, echo=TRUE-----------------------------------------------------
+## ----eval=TRUE, echo=TRUE, fig.height = 4-------------------------------------
 par(mfrow=c(1,2))
 CreatePathPlot( FPCAsparse, subset = 1:3, main = "GCV bandwidth", pch = 16)
 CreatePathPlot( FPCAsparseMuBW5, subset = 1:3, main = "User-defined bandwidth", pch = 16)
@@ -83,18 +83,20 @@ fittedCurcesP1 <- fitted(FPCAsparse, derOptns=list(p = 1, kernelType = 'epan'))
   Flies <- MakeFPCAInputs(medfly25$ID, medfly25$Days, medfly25$nEggs)
   fpcaObjFlies <- FPCA(Flies$Ly, Flies$Lt, list(plot = TRUE, methodMuCovEst = 'smooth', userBwCov = 2))
 
-## ----eval=TRUE, echo=TRUE-----------------------------------------------------
+## ----eval=TRUE, echo=TRUE, fig.height = 4-------------------------------------
 require('ks')
 par(mfrow=c(1,2))
   CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), main = 'K = 11', pch = 4); grid()
   CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', pch = 4) ; grid()
 
 ## ----eval=TRUE, echo=TRUE-----------------------------------------------------
-par(mfrow=c(1,2))
+par(mfrow=c(1,1))
   CreateOutliersPlot(fpcaObjFlies, optns = list(K = 3, variant = 'KDE'))
-  CreateFuncBoxPlot(fpcaObjFlies, xlab = 'Days', ylab = '# of eggs laid', optns = list(K =3, variant='bagplot'))
 
 ## ----eval=TRUE, echo=TRUE-----------------------------------------------------
+  CreateFuncBoxPlot(fpcaObjFlies, xlab = 'Days', ylab = '# of eggs laid', optns = list(K =3, variant='bagplot'))
+
+## ----eval=TRUE, echo=TRUE, fig.height = 4-------------------------------------
 par(mfrow=c(1,2))
   CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', showObs = FALSE) ; grid()
   CreatePathPlot(fpcaObjFlies, subset = c(3,5,135), K = 3, main = 'K = 3', showObs = FALSE, derOptns = list(p = 1, bw = 1.01 , kernelType = 'epan') ) ; grid()
