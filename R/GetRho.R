@@ -1,7 +1,7 @@
 GetRho <- function(y, t, optns, mu,muwork, obsGrid, fittedCov, lambda, phi, phiwork, workgrid, sigma2) {
   
   optnsTmp <- optns
-  optnsTmp$verbose <- FALSE 
+  optnsTmp$verbose <- FALSE
   for (j in 1:2) {
     yhat <- GetCEScores(y, t, optnsTmp, mu, obsGrid, fittedCov, lambda, phi, sigma2)[3, ] 
     sigma2 <- mean(mapply(function(a, b) mean((a - b)^2, na.rm=TRUE), yhat, y), na.rm=TRUE)
@@ -10,7 +10,7 @@ GetRho <- function(y, t, optns, mu,muwork, obsGrid, fittedCov, lambda, phi, phiw
   y = y[ls >0]
   t= t[ls > 0]
   
-  if(optns$methodRho == 'trunc'){
+  if(optns$methodRho == 'ridge'){
     R <- sqrt((trapzRcpp(obsGrid, mu ^ 2) + sum(lambda)) / diff(range(obsGrid)))
     a1 <- -13; a2 <- -1.5
     etaCand <- seq(a1, a2, length.out=50)
@@ -19,11 +19,9 @@ GetRho <- function(y, t, optns, mu,muwork, obsGrid, fittedCov, lambda, phi, phiw
     rhoCand <- seq(1,10,length.out = 50) * sigma2
   }
   
-  #  cvScores <- sapply(rhoCand, cvRho, leaveOutInd=leaveOutInd, y=y, t=t, optns=optns, mu=mu, obsGrid=obsGrid, fittedCov=fittedCov, lambda=lambda, phi=phi)
+  #cvScores <- sapply(rhoCand, cvRho, leaveOutInd=leaveOutInd, y=y, t=t, optns=optns, mu=mu, obsGrid=obsGrid, fittedCov=fittedCov, lambda=lambda, phi=phi)
   rhoScores <- sapply(rhoCand, errorRho, y=y, t=t, optns=optns, mu=mu,muwork = muwork, obsGrid=obsGrid, fittedCov=fittedCov, lambda=lambda, phi=phi,phiwork = phiwork,workgrid = workgrid)
-  
-#  plot(log(rhoCand),rhoScores,type = 'l',xlab = 'log(rho)')
-  
+  #plot(log(rhoCand),rhoScores,type = 'l',xlab = 'log(rho)')
   return(rhoCand[which.min(rhoScores)])
 }
 

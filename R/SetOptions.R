@@ -83,7 +83,7 @@ SetOptions = function(y, t, optns){
     methodSelectK = "FVE";
   }
   if(is.null(FVEthreshold)){  # Default Value for the Fraction-of-Variance-Explained
-     FVEthreshold = 0.9999;
+     FVEthreshold = 0.99;
   }
   if(is.null(dataType)){ #do we have dataType or sparse functional data
     dataType = IsRegular(t);    
@@ -93,7 +93,7 @@ SetOptions = function(y, t, optns){
   }
   if(is.null(methodMuCovEst)){
     if (dataType == 'Sparse'){
-      methodMuCovEst = 'smooth'; #In the odd case that somehow we use this...
+      methodMuCovEst = 'smooth';
     } else {
       methodMuCovEst = 'cross-sectional';
     }
@@ -133,12 +133,35 @@ SetOptions = function(y, t, optns){
   if(is.null(methodXi)){ # method to estimate the PC scores
     if(dataType == 'Dense'){
       methodXi = "IN";
-    } else if(dataType == 'Sparse'){
-      methodXi = "CE";
-    } else if(dataType == 'DenseWithMV'){
-      methodXi = "CE"; # We will see how IN can work here
-    } else { # for dataType = p>>n
-      methodXi = "IN";
+    }
+    else{
+      if(dataType == 'Sparse'){
+        if(min(sapply(1:length(t),function(i){length(t[[i]])}))>20){
+          #Compute spacing
+          tt = unlist(t);
+          T_min=range(tt)[1]; #minimum time point across all subjects
+          T_max=range(tt)[2]; #maximum time points across all subjects
+          #Max spacing among all subjects: This includes spacing from Tmin to first subject's observation and last subject's observation to Tmax
+          Spacing_max=max(sapply(1:length(t),function(i){max(c(t[[i]][1]-T_min,diff(t[[i]]),T_max-t[[i]][length(t[[i]])]))}));
+          if(Spacing_max<=(max(tt)-min(tt))*0.06){
+            methodXi = "IN"; #If number of observations per subject at least 20 and spacing below 6% of time range
+          }
+          else{
+            methodXi = "CE";
+          }
+        }
+        else{
+          methodXi = "CE";
+        }
+      }#end if dataType is sparse
+      else{
+        if(dataType == 'DenseWithMV'){
+          methodXi = "CE"
+        }
+        else{# for dataType = p>>n
+          methodXi = "IN"
+        }
+      }
     }
   }
    if(is.null(shrink)){ 
@@ -194,7 +217,7 @@ SetOptions = function(y, t, optns){
   if(is.null(methodRho)){ # truncation threshold for the iterative residual that is used
     # no regularization if sigma2 is specified or assume no measurement error.
     if (!is.null(userSigma2) || error == FALSE) { 
-      methodRho <- 'no'
+      methodRho <- 'vanilla'
     } else {
       methodRho <- 'trunc'
     }

@@ -3,9 +3,9 @@ Type: Package
 Title: Functional Data Analysis and Empirical Dynamics
 URL: https://github.com/functionaldata/tPACE
 BugReports: https://github.com/functionaldata/tPACE/issues
-Version: 0.5.5
+Version: 0.5.6
 Encoding: UTF-8
-Date: 2020-07-25,
+Date: 2021-01-10,
 Authors@R: c(person("Cody","Carroll", email="cjcarroll@ucdavis.edu", role=c("aut","cre"), comment =  c(ORCID = "0000-0003-3525-8653")),
     person("Alvaro", "Gajardo", email="aegajardo@ucdavis.edu", role=c("aut")),
     person("Yaqing","Chen", email="yaqchen@ucdavis.edu", role=c("aut")),
@@ -43,7 +43,7 @@ Suggests: plot3D, rgl, aplpack, mgcv, ks, gtools, knitr, rmarkdown,
 NeedsCompilation: yes
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
-Packaged: 2020-07-28 05:11:52 UTC; codycarroll
+Packaged: 2021-01-11 05:57:45 UTC; codycarroll
 Author: Cody Carroll [aut, cre] (<https://orcid.org/0000-0003-3525-8653>),
   Alvaro Gajardo [aut],
   Yaqing Chen [aut],
@@ -57,4 +57,4 @@ Author: Cody Carroll [aut, cre] (<https://orcid.org/0000-0003-3525-8653>),
   Hans-Georg Mueller [cph, ths, aut],
   Jane-Ling Wang [cph, ths, aut]
 Repository: CRAN
-Date/Publication: 2020-07-29 05:10:20 UTC
+Date/Publication: 2021-01-11 22:40:03 UTC
