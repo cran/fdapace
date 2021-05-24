@@ -22,9 +22,13 @@
 
 MakeResultFPCA <- function(optns, smcObj, mu, scsObj, eigObj, 
                            scoresObj, obsGrid, workGrid, rho=NULL, fitLambda=NULL, inputData, timestamps = NULL){
-  
-  xiEst <- t(do.call(cbind, scoresObj[1, ])) 
-  xiVar <- scoresObj[2, ]
+  if(optns$imputeScores==TRUE){
+    xiEst <- t(do.call(cbind, scoresObj[1, ])) 
+    xiVar <- scoresObj[2, ]
+  }else{
+    xiEst <- NULL 
+    xiVar <- NULL
+  }
   if(optns$usergrid == TRUE){
     ret <- list(sigma2 = scsObj$sigma2, 
                 lambda = eigObj$lambda, 
@@ -37,7 +41,7 @@ MakeResultFPCA <- function(optns, smcObj, mu, scsObj, eigObj,
                 smoothedCov = ConvertSupport(workGrid, obsGrid, Cov=scsObj$smoothCov), 
                 FVE = eigObj$cumFVE[eigObj$kChoosen], 
                 cumFVE =  eigObj$cumFVE, 
-                fittedCov = ConvertSupport(workGrid, obsGrid, Cov=eigObj$fittedCov), 
+                fittedCov = ConvertSupport(workGrid, obsGrid, Cov=eigObj$fittedCovUser), 
                 optns = optns, 
                 bwMu = smcObj$bw_mu, 
                 bwCov = scsObj$bwCov)
@@ -53,7 +57,7 @@ MakeResultFPCA <- function(optns, smcObj, mu, scsObj, eigObj,
               smoothedCov = scsObj$smoothCov, 
               FVE = eigObj$cumFVE[eigObj$kChoosen], 
               cumFVE =  eigObj$cumFVE, 
-              fittedCov = eigObj$fittedCov, 
+              fittedCov = eigObj$fittedCovUser, 
               optns = optns, 
               bwMu = smcObj$bw_mu, 
               bwCov = scsObj$bwCov)

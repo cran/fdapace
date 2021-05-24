@@ -1,7 +1,7 @@
-bf0f6490bf0c22ec1a5899f6c61461d5 *DESCRIPTION
+33f814904135d8de2aa4cd36b46521b0 *DESCRIPTION
 e9edd0a1f46e097c2be8532156bf40ec *LICENSE
 3cbfda6f7cf778e4c767bd551daabea8 *NAMESPACE
-a0239c691bb15ec37d6c5524b9dc8956 *NEWS
+1cd5b1b0a35c689069162f1f0ab2c241 *NEWS
 60ceff2e147f4131e85f452610aa82cc *R/BestDes_SR.R
 52d08584053eb5d540a00cb39396dbe6 *R/BestDes_TR.R
 8df04f572c413a6c57b8ae19a4285bcb *R/BinData.R
@@ -10,7 +10,7 @@ db371061c115094e0229bd607f027d52 *R/BwNN.R
 812bfdacd6593d1c2205d4a48f13d2da *R/CVLwls1D.R
 a36d3233b55e4ff9ad8f6c409c5ae632 *R/CheckAndCreateCOPoptions.R
 05cff9f097856bcc2caa54d24ad0e677 *R/CheckData.R
-71405469cf6e6e77eb14930607e05e58 *R/CheckOptions.R
+56e403bd248fb64a2af838792c0e475d *R/CheckOptions.R
 b98b724b7ca32a04db592bb7386a7940 *R/CheckSVDOptions.R
 5156c4e2e5755ed8eda7fc04eeb66e80 *R/CompFntCent.R
 360c433f97bb810821bcd52699c444fc *R/CondProjection.R
@@ -37,7 +37,7 @@ fe0835195a571d43631ae5aa8c859cd1 *R/FCReg.R
 7887dd5a0e82c68fab690fd648d58fb1 *R/FClust.R
 2f5db05b888440c0fb05686cf59f2393 *R/FLM.R
 ad209a96d397278ad80975d42ab9165b *R/FOptDes.R
-86702ee7b0d4b079dc22bf76687cf3eb *R/FPCA.R
+bcf7cf39c1b26baae3bf43a9df11fe4b *R/FPCA.R
 524730c190c97d35723768a3fe688957 *R/FPCAder.R
 05c26bad73b7f419403caf34ee501ab1 *R/FPCquantile.R
 cae1164dab8c2bcb1fe55bdc675bcc17 *R/FSVD.R
@@ -59,8 +59,8 @@ b82e87d148a78959254bbe7a41b67906 *R/GetCrCorYZ.R
 000c53720c1af686287202ffefbee0bd *R/GetCrCovYX.R
 9d1bdd77a9a53910ac789df57560ff9f *R/GetCrCovYX_old.R
 0617e52cb93c7c17c4e9f63ece1d0955 *R/GetCrCovYZ.R
-3af92e6de92586dfb9875bf664396283 *R/GetEigenAnalysisResults.R
-3ab956bdd79341c7415777b3e299385b *R/GetINScores.R
+637dd22f6919c20326b0426f587b9a5d *R/GetEigenAnalysisResults.R
+23e754631a39ede4effb911e511059cf *R/GetINScores.R
 23d355736579ca038e2a49173d7d5be6 *R/GetLogLik.R
 0f77a0ec6293956fcb7aab2278cf1640 *R/GetMeanCI.R
 f94bb1c778f942497c87be2a2105e3f1 *R/GetMeanCurve.R
@@ -71,7 +71,7 @@ d117632cbe9111e2f7945a4f995fa099 *R/GetRawCov.R
 0170f4c945c1556496123c4c0e0c3f67 *R/GetRawCrCovFuncFunc.R
 c80fc923e7757d17b51755e56875f3dd *R/GetRawCrCovFuncScal.R
 7744c781d002cb8115fe84bad284fdea *R/GetRho.R
-fa404504538e980038bb5fb7e810f4f9 *R/GetSmoothedCovarSurface.R
+1d484ba250274287a4be28dabcf5db09 *R/GetSmoothedCovarSurface.R
 79791d3aff0840f3c031d6bb800985e9 *R/GetSmoothedMeanCurve.R
 b472261a58b151f6fe49ef54dd060fbf *R/GetUserCov.R
 d30209ac2fafc9bbab0f0c147d6daafe *R/GetUserMeanCurve.R
@@ -87,7 +87,7 @@ e32f9dbe17da7abb37893caeff059ca0 *R/MakeBWtoZscore02y.R
 34c246994beef6c0316e7508ec1c2ffe *R/MakeGPFunctionalData.R
 1935111ed92202a511c008ff0c66f200 *R/MakeHCtoZscore02y.R
 8c26cfbabc93890704755c957e0e84a6 *R/MakeLNtoZscore02y.R
-76f4d7a89c032d3ebcb5997e52c0394e *R/MakeResultFPCA.R
+463e858263cdc84db1fd67c679ad8ae7 *R/MakeResultFPCA.R
 7ff55331d325c1bced94e8263bd82b79 *R/MakeSparseGP.R
 e528972310b46a7b7c316b422472d11c *R/MapX1D.R
 e5ddd4e091ceddba342ee6ba8c45f18b *R/MgnJntDensity.R
@@ -104,7 +104,7 @@ da5bf06eb4277e86227c4003d8443045 *R/SBFitting.R
 b475b7a45fde6f1b18a1dcc41cb64be6 *R/ScaleKernel.R
 db2ff7b7f300ca27ca6f00477ba8fb09 *R/SelectK.R
 4897ab828996de628b9de238340173dd *R/SetDerOptions.R
-a7c4c7b86c656f8abceeccbe3527c6d5 *R/SetOptions.R
+f3254b76a6d768dd9e8c1b7ee5a8696c *R/SetOptions.R
 ff563636564f04c91f1cce3f473d324b *R/SetSVDOptions.R
 f6677b9825e8729971a0cb496c0a0f00 *R/Sparsify.R
 334a1262bea56a9ccb30cb3c83ad16b3 *R/Stringing.R
@@ -127,11 +127,11 @@ fdc52bd0c26e53ff2e6ea877c9b0f070 *R/medfly25.R
 54b78ae8b15373d323bb40a03cd2c04e *R/print.WFDA.R
 50f7d629d64e7cbb4736dc183c352eb0 *R/str.FPCA.R
 6fa76b10e32d95581edc225b0c6949d0 *README.md
-d3fc4fa6680b5a600140e5e329a92c6b *build/vignette.rds
+97f637b9294187819282a0a853ec2513 *build/vignette.rds
 0fe4863dd34afa9d879e34f20824585d *data/medfly25.RData
 7232216823db4735ad3e57b2d88dd847 *inst/doc/fdapaceVig.R
 efa4f763d444b17d30bf3639ac89e7d8 *inst/doc/fdapaceVig.Rmd
-c90cb0cd6b52591adc6fda0574e5a260 *inst/doc/fdapaceVig.html
+b1c61bbd40cc11686b2c005fc5fc071f *inst/doc/fdapaceVig.html
 ce7bac21cfd2da38308bdafb9148fe9d *man/BwNN.Rd
 ab1911c3eb0ab5f8cb078af8e06ee9cf *man/CheckData.Rd
 69fcb8175afae2ca099f436815e5c32b *man/CheckOptions.Rd
@@ -154,7 +154,7 @@ f0fa90142990d29a1771c072a91a29b2 *man/FAM.Rd
 9161e41eb28951f576b6e268667b6824 *man/FClust.Rd
 2a18f43a9ce9e6550a5a8f419b478d50 *man/FLM.Rd
 ec749b9b6f9104d1799a3b22383418ca *man/FOptDes.Rd
-53fd5d8cbec869761168daf59e90361c *man/FPCA.Rd
+9d2706cf129b229cf1b96bbcc552bd0f *man/FPCA.Rd
 0b61a36450b55045845baf4c440c5548 *man/FPCAder.Rd
 12488080016ed0b092bd7b311f2a0df1 *man/FPCquantile.Rd
 29af445388a161eda51b422b2acdddc6 *man/FSVD.Rd

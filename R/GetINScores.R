@@ -15,6 +15,11 @@
 ##########################################################################
 
 GetINScores <- function(yvec, tvec, optns,obsGrid, mu, lambda, phi, sigma2=NULL){
+  
+  if(is.vector(phi)){
+    phi=matrix(as.numeric(phi),nrow=length(phi),ncol=1)
+  }
+  
   if(length(lambda) != ncol(phi)){
     stop('No. of eigenvalues is not the same as the no. of eigenfunctions.')
   }
@@ -24,6 +29,10 @@ GetINScores <- function(yvec, tvec, optns,obsGrid, mu, lambda, phi, sigma2=NULL)
   mu= approx(obsGrid,mu,tvec)$y
   cy = yvec - mu
   phi = apply(phi,2,function(phivec){return(approx(obsGrid,phivec,tvec)$y)})
+  
+  if(!is.matrix(phi)){
+    phi=matrix(as.numeric(phi),nrow=1,ncol=length(phi))
+  }
   
   xiEst = matrix(0,length(lambda)) 
   # Get Scores xiEst

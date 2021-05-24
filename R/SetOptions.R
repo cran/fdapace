@@ -18,6 +18,7 @@ SetOptions = function(y, t, optns){
   kFoldMuCov = optns[['kFoldMuCov']]
   methodSelectK =optns[['methodSelectK']];  
   FVEthreshold =optns[['FVEthreshold']];
+  FVEfittedCov =optns[['FVEfittedCov']];
   fitEigenValues <- optns[['fitEigenValues']];
   maxK =optns[['maxK']];                
   dataType =optns[['dataType']];          
@@ -32,7 +33,7 @@ SetOptions = function(y, t, optns){
   usergrid =optns[['usergrid']];
   userRho = optns[['userRho']];
   diagnosticsPlot =optns[['diagnosticsPlot']];
-  plot =optns[['plot']]
+  plot =optns[['plot']];
   if (!is.null(diagnosticsPlot)) {
     warning("The option 'diagnosticsPlot' is deprecated. Use 'plot' instead")
     plot = diagnosticsPlot
@@ -46,8 +47,9 @@ SetOptions = function(y, t, optns){
   rotationCut =optns[['rotationCut']];    
   useBinnedData =optns[['useBinnedData']];
   useBinnedCov = optns[['useBinnedCov']]
-  lean = optns[['lean']]
-  useBW1SE =optns[['useBW1SE']];   
+  lean = optns[['lean']];
+  useBW1SE =optns[['useBW1SE']]; 
+  imputeScores = optns[['imputeScores']];
 
   if(is.null(methodBwMu)){ # bandwidth choice for mean function is GCV if userBwMu = 0
     #methodBwMu = 'GMeanAndGCV';  
@@ -84,6 +86,9 @@ SetOptions = function(y, t, optns){
   }
   if(is.null(FVEthreshold)){  # Default Value for the Fraction-of-Variance-Explained
      FVEthreshold = 0.99;
+  }
+  if(is.null(FVEfittedCov)){ 
+    FVEfittedCov = NULL;
   }
   if(is.null(dataType)){ #do we have dataType or sparse functional data
     dataType = IsRegular(t);    
@@ -262,23 +267,28 @@ SetOptions = function(y, t, optns){
   if(is.null(usergrid)){ 
     usergrid = FALSE;
   }
+
   if(is.null(lean)){ 
     lean = FALSE;
   }
   if(is.null(useBW1SE)){ 
     useBW1SE = FALSE;
   }
+  if(is.null(imputeScores)){ # check for scores imputation
+    imputeScores=TRUE; 
+  }
   # if (!all.equal(outPercent, c(0, 1)) && methodMuCovEst == 'cross-sectional') {
     # stop('outPercent not supported for cross-sectional covariance estimate')
   # }
     
   retOptns <- list(userBwMu = userBwMu, methodBwMu = methodBwMu, userBwCov = userBwCov, methodBwCov = methodBwCov,
-          kFoldMuCov = kFoldMuCov, methodSelectK = methodSelectK, FVEthreshold = FVEthreshold,
+          kFoldMuCov = kFoldMuCov, methodSelectK = methodSelectK, FVEthreshold = FVEthreshold, FVEfittedCov = FVEfittedCov,
           fitEigenValues = fitEigenValues, maxK = maxK, dataType = dataType, error = error, shrink = shrink,
           nRegGrid = nRegGrid, rotationCut = rotationCut, methodXi = methodXi, kernel = kernel, 
           lean = lean, diagnosticsPlot = diagnosticsPlot, plot=plot, numBins = numBins, useBinnedCov = useBinnedCov, 
           usergrid = usergrid, yname = yname,  methodRho = methodRho, verbose = verbose, userMu = userMu, userCov = userCov, methodMuCovEst = methodMuCovEst,
-          userRho = userRho, userSigma2 = userSigma2, outPercent = outPercent, useBinnedData = useBinnedData, useBW1SE = useBW1SE)
+          userRho = userRho, userSigma2 = userSigma2, outPercent = outPercent, useBinnedData = useBinnedData, useBW1SE = useBW1SE,
+          imputeScores = imputeScores)
 
   invalidNames <- !names(optns) %in% names(retOptns)
   if (any(invalidNames)) {

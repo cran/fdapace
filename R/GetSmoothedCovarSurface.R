@@ -98,7 +98,6 @@ GetSmoothedCovarSurface <- function(y, t, mu, obsGrid, regGrid, optns, useBinned
       }
       diagEst <- approx(diagT, diagVal, cutRegGrid[middleCutRegGrid])[['y']]
       sigma2 <- mean(diagEst - diag(smoothCov)[middleCutRegGrid])
-      
     } else { # has to estimate sigma2 from scratch
       sigma2 <- PC_CovE(obsGrid, regGrid, bwCov, rotationCut=rotationCut, kernel=kern, rcov=rcov)$sigma2
     }
