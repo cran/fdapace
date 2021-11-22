@@ -2,11 +2,12 @@
 % Please edit documentation in R/CreateCovPlot.R
 \name{CreateCovPlot}
 \alias{CreateCovPlot}
-\title{Creates a covariance surface plot based on the results from FPCA() or FPCder().}
+\title{Creates a correlation surface plot based on the results from FPCA() or FPCder().}
 \usage{
 CreateCovPlot(
   fpcaObj,
   covPlotType = "Fitted",
+  corr = FALSE,
   isInteractive = FALSE,
   colSpectrum = NULL,
   ...
@@ -18,6 +19,12 @@ CreateCovPlot(
 \item{covPlotType}{a string specifying the type of covariance surface to be plotted:
 'Smoothed': plot the smoothed cov surface 
 'Fitted': plot the fitted cov surface}
+
+\item{corr}{a boolean value indicating whether to plot the fitted covariance or correlation surface from the fpca object
+TRUE: fitted correlation surface;
+FALSE: fitted covariance surface;
+default is FALSE; 
+Only plotted for fitted fpca objects}
 
 \item{isInteractive}{an option for interactive plot:
 TRUE: interactive plot; FALSE: printable plot}
@@ -37,5 +44,6 @@ sampWiener <- Wiener(n, pts)
 sampWiener <- Sparsify(sampWiener, pts, 10)
 res <- FPCA(sampWiener$Ly, sampWiener$Lt, 
             list(dataType='Sparse', error=FALSE, kernel='epan', verbose=TRUE))
-CreateCovPlot(res)
+CreateCovPlot(res) ##plotting the covariance surface
+CreateCovPlot(res, corr = TRUE) ##plotting the correlation surface
 }

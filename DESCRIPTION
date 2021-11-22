@@ -3,10 +3,11 @@ Type: Package
 Title: Functional Data Analysis and Empirical Dynamics
 URL: https://github.com/functionaldata/tPACE
 BugReports: https://github.com/functionaldata/tPACE/issues
-Version: 0.5.7
+Version: 0.5.8
 Encoding: UTF-8
-Date: 2021-05-17,
+Date: 2021-11-22,
 Authors@R: c(person("Alvaro", "Gajardo", email="aegajardo@ucdavis.edu", role=c("aut","cre")),
+    person("Satarupa","Bhattacharjee", role=c("aut")),
     person("Cody","Carroll", email="cjcarroll@ucdavis.edu", role=c("aut"), comment =  c(ORCID = "0000-0003-3525-8653")),
     person("Yaqing","Chen", email="yaqchen@ucdavis.edu", role=c("aut")),
     person("Xiongtao","Dai", email="dai@ucdavis.edu", role=c("aut")),
@@ -14,9 +15,10 @@ Authors@R: c(person("Alvaro", "Gajardo", email="aegajardo@ucdavis.edu", role=c("
     person("Pantelis Z.","Hadjipantelis", role=c("aut")),
     person("Kyunghee","Han", role="aut"),
     person("Hao","Ji", role=c("aut")),
+    person("Changbo","Zhu", role=c("aut")),
     person("Shu-Chin", "Lin", role="ctb"),
     person("Paromita", "Dubey", role="ctb"),
-    person("Hans-Georg", "Mueller", role=c("cph","ths","aut")),
+    person("Hans-Georg", "Müller", role=c("cph","ths","aut")),
     person("Jane-Ling", "Wang", role=c("cph","ths","aut"))) 
 Maintainer: Alvaro Gajardo <aegajardo@ucdavis.edu>
 Description: A versatile package that provides implementation of various
@@ -41,10 +43,11 @@ LinkingTo: Rcpp, RcppEigen
 Suggests: plot3D, rgl, aplpack, mgcv, ks, gtools, knitr, rmarkdown,
         EMCluster, minqa, testthat
 NeedsCompilation: yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
-Packaged: 2021-05-17 23:50:46 UTC; alvaro
+Packaged: 2021-11-22 19:53:07 UTC; alvaro
 Author: Alvaro Gajardo [aut, cre],
+  Satarupa Bhattacharjee [aut],
   Cody Carroll [aut] (<https://orcid.org/0000-0003-3525-8653>),
   Yaqing Chen [aut],
   Xiongtao Dai [aut],
@@ -52,9 +55,10 @@ Author: Alvaro Gajardo [aut, cre],
   Pantelis Z. Hadjipantelis [aut],
   Kyunghee Han [aut],
   Hao Ji [aut],
+  Changbo Zhu [aut],
   Shu-Chin Lin [ctb],
   Paromita Dubey [ctb],
-  Hans-Georg Mueller [cph, ths, aut],
+  Hans-Georg Müller [cph, ths, aut],
   Jane-Ling Wang [cph, ths, aut]
 Repository: CRAN
-Date/Publication: 2021-05-24 04:20:02 UTC
+Date/Publication: 2021-11-22 22:40:02 UTC

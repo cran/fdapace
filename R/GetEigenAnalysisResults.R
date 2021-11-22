@@ -57,7 +57,14 @@ GetEigenAnalysisResults <- function(smoothCov, regGrid, optns, muWork = NULL) {
   }
   fittedCovUser <- phi[,1:no_fittedCov, drop=FALSE] %*% diag(x=lambda[1:no_fittedCov], nrow = length(lambda[1:no_fittedCov])) %*% t(phi[,1:no_fittedCov, drop=FALSE])
   fittedCov <- phi %*% diag(x=lambda, nrow = length(lambda)) %*% t(phi)
-  
+  if(any(diag(fittedCovUser) ==0)){
+    fittedCorrUser = NULL
+  } else{
+    fittedCorrUser <- (diag(1/sqrt(diag(fittedCovUser)))) %*% fittedCovUser %*% (diag(1/sqrt(diag(fittedCovUser))))
+    diag(fittedCorrUser) = 1
+  }
   return(list(lambda = lambda[1:no_opt], phi = phi[,1:no_opt, drop=FALSE], 
-              cumFVE = FVE, kChoosen=no_opt, fittedCov=fittedCov, fittedCovUser=fittedCovUser))
+              cumFVE = FVE, kChoosen=no_opt, 
+              fittedCov=fittedCov, fittedCovUser=fittedCovUser,
+              fittedCorrUser=fittedCorrUser))
 }

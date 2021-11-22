@@ -19,7 +19,7 @@ FLM(Y, X, XTest = NULL, optnsListY = NULL, optnsListX = NULL)
 }
 \value{
 A list of the following:
-\item{alpha}{A length-one numeric if the response Y is scalar. Or a vector of \code{length(workGridY)} of the fitted constant alpha(t) in the linear model if Y is functional.}
+\item{muY}{A length-one numeric if the response Y is scalar or a vector of \code{length(workGridY)} of the fitted mean function of Y in the linear model if Y is functional.}
 \item{betaList}{A list of fitted beta(s) vectors, one per predictor, if Y is scalar. Each of dimension \code{length(workGridX[[j]])}.
 
 Or a list of fitted beta(s,t) matrices, one per predictor, if Y is functional. Each of dimension \code{length(workGridX[[j]])} times \code{length(workGridY)}.
