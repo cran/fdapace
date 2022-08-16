@@ -4,7 +4,7 @@
 \alias{FLM}
 \title{Functional Linear Models}
 \usage{
-FLM(Y, X, XTest = NULL, optnsListY = NULL, optnsListX = NULL)
+FLM(Y, X, XTest = NULL, optnsListY = NULL, optnsListX = NULL, nPerm = NULL)
 }
 \arguments{
 \item{Y}{Either an \emph{n}-dimensional vector whose elements consist of scalar responses, or a list which contains functional responses in the form of a list LY and the time points LT at which they are observed (i.e., list(Ly = LY,Lt = LT)).}
@@ -16,14 +16,18 @@ FLM(Y, X, XTest = NULL, optnsListY = NULL, optnsListX = NULL)
 \item{optnsListY}{A list of options control parameters for the response specified by \code{list(name=value)}. See `Details' in  \code{FPCA}.}
 
 \item{optnsListX}{A list of options control parameters for the predictors specified by \code{list(name=value)}. See `Details' in  \code{FPCA}.}
+
+\item{nPerm}{If this argument is specified, perform a permutation test to obtain the (global) p-value for the test of regression relationship between X and Y. Recommend to set to 1000 or larger if specified.}
 }
 \value{
 A list of the following:
-\item{muY}{A length-one numeric if the response Y is scalar or a vector of \code{length(workGridY)} of the fitted mean function of Y in the linear model if Y is functional.}
+\item{alpha}{A length-one numeric if the response Y is scalar. Or a vector of \code{length(workGridY)} of the fitted constant alpha(t) in the linear model if Y is functional.}
 \item{betaList}{A list of fitted beta(s) vectors, one per predictor, if Y is scalar. Each of dimension \code{length(workGridX[[j]])}.
 
 Or a list of fitted beta(s,t) matrices, one per predictor, if Y is functional. Each of dimension \code{length(workGridX[[j]])} times \code{length(workGridY)}.
 }
+\item{R2}{The functional R2}
+\item{pv}{Permutation p-value based on the functional R2}
 \item{yHat}{A length n vector if Y is scalar. 
 
 Or an n by \code{length(workGridY)} matrix of fitted Y's from the model if Y is functional.}
@@ -43,7 +47,7 @@ Or a \code{length(XTest[[1]]$Ly)} by \code{length(workGridY)} matrix of predicte
 \item{workGridY}{A vector of working grid of the response Y's. NULL if Y is scalar}
 }
 \description{
-Functional linear models for scalar or functional responses and functional predictors.
+Functional linear models for scalar or functional responses and functional predictors. The current implementation performs the regression on the FPC scores.
 }
 \examples{
 set.seed(1000)
